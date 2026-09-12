@@ -185,7 +185,10 @@ function load() {
     p.reward.dailyGoalPoints = p.reward.dailyGoalPoints || 50;
     p.reward.history = p.reward.history || [];
     p.habits = (p.habits || []).map(h => ({ type: 'recurring', createdAt: Date.now(), ...h }));
-    p.negativeHabits = (p.negativeHabits || []).map(h => ({ type: 'recurring', createdAt: Date.now(), ...h }));
+    p.negativeHabits = (p.negativeHabits || []).map(h => {
+      const rate = h.rate !== undefined ? h.rate : (h.penalty !== undefined ? h.penalty : 5);
+      return { type: 'recurring', createdAt: Date.now(), ...h, rate };
+    });
     return p;
   } catch (e) { return defaultData(); }
 }
@@ -215,6 +218,14 @@ function getHabitDisplaySeconds(habitId) {
   return start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
 }
 
+function getNegativeSecondsToday(habitId) {
+  const today = localDateStr();
+  const logged = (state.negativeLogs[today] && state.negativeLogs[today][habitId]) || 0;
+  const start = state.activeTimers[habitId];
+  const live = start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
+  return logged + live;
+}
+
 function startTimer(id) { state.activeTimers[id] = Date.now(); save(); render(); }
 
 function stopTimer(id) {
@@ -222,12 +233,21 @@ function stopTimer(id) {
   if (!start) return;
   const elapsedSec = Math.max(0, Math.round((Date.now() - start) / 1000));
   const day = localDateStr();
-  state.logs[day] = state.logs[day] || {};
-  state.logs[day][id] = (state.logs[day][id] || 0) + elapsedSec;
-  const habit = state.habits.find(h => h.id === id);
-  const pointsEarned = habit ? (elapsedSec / 60) * habit.rate : 0;
-  state.reward.pointBalance += pointsEarned;
-  state.totalPointsAllTime += pointsEarned;
+  const posHabit = state.habits.find(h => h.id === id);
+  const negHabit = state.negativeHabits.find(h => h.id === id);
+  if (posHabit) {
+    state.logs[day] = state.logs[day] || {};
+    state.logs[day][id] = (state.logs[day][id] || 0) + elapsedSec;
+    const pointsEarned = (elapsedSec / 60) * posHabit.rate;
+    state.reward.pointBalance += pointsEarned;
+    state.totalPointsAllTime += pointsEarned;
+  } else if (negHabit) {
+    state.negativeLogs[day] = state.negativeLogs[day] || {};
+    state.negativeLogs[day][id] = (state.negativeLogs[day][id] || 0) + elapsedSec;
+    const pointsLost = (elapsedSec / 60) * negHabit.rate;
+    state.reward.pointBalance = Math.max(0, state.reward.pointBalance - pointsLost);
+    state.totalPointsAllTime = Math.max(0, state.totalPointsAllTime - pointsLost);
+  }
   delete state.activeTimers[id];
   save(); render();
 }
@@ -250,27 +270,16 @@ function deleteHabit(id) {
 
 function addNegativeHabit() {
   const name = document.getElementById('new-neg-name').value.trim();
-  const penalty = parseFloat(document.getElementById('new-neg-penalty').value);
+  const rate = parseFloat(document.getElementById('new-neg-rate').value);
   const type = document.getElementById('new-neg-type').value;
   if (!name) return;
-  state.negativeHabits.push({ id: genId(), name, penalty: isNaN(penalty) ? 5 : penalty, type, createdAt: Date.now() });
+  state.negativeHabits.push({ id: genId(), name, rate: isNaN(rate) ? 5 : rate, type, createdAt: Date.now() });
   addingNegative = false;
   save(); render();
 }
 
 function deleteNegativeHabit(id) {
   state.negativeHabits = state.negativeHabits.filter(h => h.id !== id);
-  save(); render();
-}
-
-function logNegative(id) {
-  const day = localDateStr();
-  state.negativeLogs[day] = state.negativeLogs[day] || {};
-  state.negativeLogs[day][id] = (state.negativeLogs[day][id] || 0) + 1;
-  const nh = state.negativeHabits.find(h => h.id === id);
-  const penalty = nh ? nh.penalty : 0;
-  state.reward.pointBalance = Math.max(0, state.reward.pointBalance - penalty);
-  state.totalPointsAllTime = Math.max(0, state.totalPointsAllTime - penalty);
   save(); render();
 }
 
@@ -304,8 +313,8 @@ function pointsForDay(dateStr) {
     pts += (secs / 60) * h.rate;
   });
   state.negativeHabits.forEach(h => {
-    const count = (state.negativeLogs[dateStr] && state.negativeLogs[dateStr][h.id]) || 0;
-    pts -= count * h.penalty;
+    const secs = (state.negativeLogs[dateStr] && state.negativeLogs[dateStr][h.id]) || 0;
+    pts -= (secs / 60) * h.rate;
   });
   return pts;
 }
@@ -315,6 +324,10 @@ function todayPointsLive() {
   state.habits.forEach(h => {
     const start = state.activeTimers[h.id];
     if (start) pts += (Math.max(0, Math.floor((Date.now() - start) / 1000)) / 60) * h.rate;
+  });
+  state.negativeHabits.forEach(h => {
+    const start = state.activeTimers[h.id];
+    if (start) pts -= (Math.max(0, Math.floor((Date.now() - start) / 1000)) / 60) * h.rate;
   });
   return pts;
 }
@@ -512,15 +525,18 @@ function renderHabitsTab() {
   const negRowsHtml = state.negativeHabits.length === 0
     ? `<div class="empty">لا توجد عادات سلبية مضافة.</div>`
     : state.negativeHabits.map((h) => {
-      const todayCount = (state.negativeLogs[localDateStr()] && state.negativeLogs[localDateStr()][h.id]) || 0;
+      const running = !!state.activeTimers[h.id];
+      const seconds = getHabitDisplaySeconds(h.id);
+      const todaySecs = getNegativeSecondsToday(h.id);
       return `
         <div class="habit-row">
           <span class="dot" style="background:${'#B5563B'}"></span>
           <div class="habit-info">
             <div class="name">${h.name}</div>
-            <div class="rate">-${h.penalty} نقطة/مرة ${typeTag(h.type)} · اليوم: ${todayCount}</div>
+            <div class="rate">-${h.rate} نقطة/دقيقة ${typeTag(h.type)} · اليوم: ${formatDuration(todaySecs)}</div>
           </div>
-          <button class="btn-rust" data-action="log-negative" data-id="${h.id}">سجّل</button>
+          <span class="habit-time">${formatDuration(seconds)}</span>
+          <button class="icon-btn ${running ? 'stop' : 'play'}" data-action="${running ? 'stop' : 'start'}" data-id="${h.id}">${running ? '❚❚' : '▶'}</button>
           <button class="icon-btn del" data-action="delete-negative" data-id="${h.id}">✕</button>
         </div>`;
     }).join('');
@@ -529,11 +545,11 @@ function renderHabitsTab() {
     <div class="card add-form">
       <div class="field">
         <label>اسم العادة السلبية</label>
-        <input id="new-neg-name" placeholder="مثال: تدخين" />
+        <input id="new-neg-name" placeholder="مثال: سكرول موبايل" />
       </div>
       <div class="field small">
-        <label>نقاط خصم/مرة</label>
-        <input id="new-neg-penalty" type="number" value="5" />
+        <label>نقطة خصم/دقيقة</label>
+        <input id="new-neg-rate" type="number" value="5" />
       </div>
       <div class="field mid">
         <label>نوع العادة</label>
@@ -775,7 +791,6 @@ document.addEventListener('click', (e) => {
   else if (action === 'toggle-add-negative') { addingNegative = !addingNegative; render(); }
   else if (action === 'save-add-negative') addNegativeHabit();
   else if (action === 'delete-negative') deleteNegativeHabit(id);
-  else if (action === 'log-negative') logNegative(id);
   else if (action === 'convert') convertPoints();
   else if (action === 'edit-reward') { editingReward = true; render(); }
   else if (action === 'save-reward') saveRewardEdit();
