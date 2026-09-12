@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>متعقب العادات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #12161D;
+    --surface: #1A2029;
+    --surface2: #212836;
+    --border: #2B3342;
+    --text: #EDE6D6;
+    --text-muted: #8B93A1;
+    --gold: #C9A24B;
+    --gold-dim: rgba(201,162,75,0.14);
+    --teal: #4E8B7C;
+    --rust: #B5563B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Cairo', sans-serif; }
+  body { min-height: 100vh; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px 20px 90px; }
+
+  /* Tab bar */
+  .tabbar { position: sticky; top: 0; z-index: 20; background: var(--bg); display: flex; gap: 4px; overflow-x: auto; padding: 10px 0 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab-btn { flex: 1; min-width: 84px; background: none; border: none; color: var(--text-muted); font-family: inherit; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 4px; border-radius: 10px; white-space: nowrap; }
+  .tab-btn .tab-icon { font-size: 18px; }
+  .tab-btn.active { color: var(--gold); background: var(--gold-dim); }
+
+  .header { position: relative; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .corner-total { position: absolute; top: 0; left: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .header .date { color: var(--text-muted); font-size: 14px; margin-bottom: 10px; }
+  .header .hero { display: flex; align-items: baseline; gap: 12px; }
+  .header .hero .num { color: var(--gold); font-size: 44px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .header .hero .label { color: var(--text-muted); font-size: 15px; }
+  .header .today-points { margin-top: 8px; color: var(--text-muted); font-size: 13px; }
+  .header .today-points b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  h2 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+  .page-title { font-size: 20px; font-weight: 800; margin: 0 0 16px; }
+  .section { margin-bottom: 40px; }
+  .row-between { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .link-btn { background: none; border: none; color: var(--gold); font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 0; }
+  .link-btn.rust { color: var(--rust); }
+  .muted-btn { background: none; border: none; color: var(--text-muted); font-family: inherit; font-size: 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 0; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .add-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 12px; }
+  .field { flex: 1; min-width: 140px; }
+  .field.small { flex: none; width: 110px; }
+  .field.mid { flex: none; width: 160px; }
+  .field label { display: block; color: var(--text-muted); font-size: 12px; margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; padding: 9px 12px; font-family: inherit; font-size: 14px; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--gold); }
+  .btn-solid { background: var(--gold); color: var(--bg); border: none; border-radius: 6px; padding: 10px 18px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .btn-outline { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 10px 18px; font-family: inherit; font-size: 14px; cursor: pointer; }
+  .btn-teal { background: var(--teal); color: #fff; border: none; border-radius: 6px; padding: 10px 18px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .btn-teal:disabled { background: var(--surface2); color: var(--text-muted); cursor: default; }
+  .btn-rust { background: var(--rust); color: #fff; border: none; border-radius: 6px; padding: 9px 16px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+  .habit-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .habit-info { flex: 1; min-width: 0; }
+  .habit-info .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .habit-info .rate { color: var(--text-muted); font-size: 12px; }
+  .habit-info .tag { display: inline-block; margin-right: 6px; font-size: 10px; background: var(--surface2); color: var(--text-muted); padding: 1px 6px; border-radius: 8px; }
+  .habit-time { font-variant-numeric: tabular-nums; font-size: 14px; width: 64px; text-align: left; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 16px; }
+  .icon-btn.play { background: var(--gold-dim); color: var(--gold); }
+  .icon-btn.stop { background: var(--rust); color: #fff; }
+  .icon-btn.del { background: none; color: var(--text-muted); }
+  .empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px 0; }
+
+  .month-block { margin-bottom: 22px; }
+  .month-title { font-weight: 700; font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+  .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-align: center; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-cell { aspect-ratio: 1; border-radius: 6px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .cal-cell.empty-cell { border: none; }
+  .cal-day { font-weight: 700; font-size: 11px; }
+  .cal-stars { color: var(--gold); font-size: 9px; font-weight: 700; }
+
+  .reward-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .reward-goal { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .progress-bar { background: var(--surface2); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { background: var(--gold); height: 100%; }
+  .points-row { display: flex; align-items: center; justify-content: space-between; }
+  .points-label { color: var(--text-muted); font-size: 12px; }
+  .points-value { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .points-est { color: var(--text-muted); font-size: 12px; }
+  .history { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
+  .history .h-title { color: var(--text-muted); font-size: 12px; margin-bottom: 8px; }
+  .history .h-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .history .h-item .d { color: var(--text-muted); }
+
+  /* Streaks tab */
+  .streak-card { margin-bottom: 20px; }
+  .streak-card .s-title { display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 4px; }
+  .streak-card .s-sub { color: var(--text-muted); font-size: 12px; margin-bottom: 10px; }
+  .streak-card svg text { font-family: 'Cairo', sans-serif; }
+
+  /* Goals tab */
+  .goal-sentence { line-height: 2.4; font-size: 15px; margin-bottom: 14px; }
+  .goal-sentence input { background: var(--surface2); border: 1px solid var(--border); color: var(--gold); font-family: inherit; font-weight: 700; border-radius: 6px; padding: 6px 10px; outline: none; font-size: 14px; }
+  .goal-sentence input:focus { border-color: var(--gold); }
+  .goal-sentence input#goal-habit { width: 150px; }
+  .goal-sentence input#goal-place { width: 130px; }
+  .goal-sentence input#goal-time { width: 120px; color: var(--text); }
+  .notif-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-muted); }
+  .notif-status b { color: var(--text); }
+  .goal-item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .goal-item .g-icon { font-size: 18px; }
+  .goal-item .g-body { flex: 1; min-width: 0; font-size: 14px; line-height: 1.6; }
+  .goal-item .g-body .g-time { color: var(--gold); font-weight: 700; }
+  .goal-item .g-body .g-place { color: var(--teal); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const KEY = 'habitTrackerV2';
+const SERIES_COLORS = ['#C9A24B', '#4E8B7C', '#8C6BAE', '#5B8FB0', '#B5563B', '#8FA85B'];
+const TABS = [
+  { id: 'habits',  label: 'العادات',  icon: '📋' },
+  { id: 'streaks', label: 'السلسلة',  icon: '📈' },
+  { id: 'calendar',label: 'التقويم',  icon: '🗓️' },
+  { id: 'goals',   label: 'الأهداف',  icon: '🎯' },
+  { id: 'reward',  label: 'المكافأة', icon: '🪙' },
+];
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function localDateStr(d = new Date()) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function formatDuration(totalSeconds) {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function defaultData() {
+  return {
+    habits: [{ id: genId(), name: 'قراءة كتاب', rate: 10, type: 'recurring', createdAt: Date.now() }],
+    negativeHabits: [],
+    logs: {},
+    negativeLogs: {},
+    activeTimers: {},
+    totalPointsAllTime: 0,
+    goals: [],
+    reward: { goalName: 'كيس ملاكمة', targetAmount: 50, pointBalance: 0, dollarBalance: 0, pointsPerDollar: 100, dailyGoalPoints: 50, history: [] },
+  };
+}
+
+let state = load();
+let activeTab = 'habits';
+let addingHabit = false;
+let addingNegative = false;
+let editingReward = false;
+let editingDailyGoal = false;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return defaultData();
+    const p = JSON.parse(raw);
+    p.negativeHabits = p.negativeHabits || [];
+    p.negativeLogs = p.negativeLogs || {};
+    p.totalPointsAllTime = typeof p.totalPointsAllTime === 'number' ? p.totalPointsAllTime : 0;
+    p.logs = p.logs || {};
+    p.activeTimers = p.activeTimers || {};
+    p.goals = p.goals || [];
+    p.reward = p.reward || {};
+    p.reward.goalName = p.reward.goalName || 'كيس ملاكمة';
+    p.reward.targetAmount = p.reward.targetAmount || 50;
+    p.reward.pointBalance = p.reward.pointBalance || 0;
+    p.reward.dollarBalance = p.reward.dollarBalance || 0;
+    p.reward.pointsPerDollar = p.reward.pointsPerDollar || 100;
+    p.reward.dailyGoalPoints = p.reward.dailyGoalPoints || 50;
+    p.reward.history = p.reward.history || [];
+    p.habits = (p.habits || []).map(h => ({ type: 'recurring', createdAt: Date.now(), ...h }));
+    p.negativeHabits = (p.negativeHabits || []).map(h => ({ type: 'recurring', createdAt: Date.now(), ...h }));
+    return p;
+  } catch (e) { return defaultData(); }
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+function pruneTemporary() {
+  const cutoff = 24 * 3600 * 1000;
+  const now = Date.now();
+  const bp = state.habits.length, bn = state.negativeHabits.length;
+  state.habits = state.habits.filter(h => !(h.type === 'temporary' && (now - h.createdAt) > cutoff));
+  state.negativeHabits = state.negativeHabits.filter(h => !(h.type === 'temporary' && (now - h.createdAt) > cutoff));
+  if (state.habits.length !== bp || state.negativeHabits.length !== bn) save();
+}
+
+/* getHabitSecondsToday: real accumulated total for the day (used for points/stats/streak chart) */
+function getHabitSecondsToday(habitId) {
+  const today = localDateStr();
+  const logged = (state.logs[today] && state.logs[today][habitId]) || 0;
+  const start = state.activeTimers[habitId];
+  const live = start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
+  return logged + live;
+}
+
+/* getHabitDisplaySeconds: the counter shown on the habit row — resets to zero every time it's stopped/saved */
+function getHabitDisplaySeconds(habitId) {
+  const start = state.activeTimers[habitId];
+  return start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
+}
+
+function startTimer(id) { state.activeTimers[id] = Date.now(); save(); render(); }
+
+function stopTimer(id) {
+  const start = state.activeTimers[id];
+  if (!start) return;
+  const elapsedSec = Math.max(0, Math.round((Date.now() - start) / 1000));
+  const day = localDateStr();
+  state.logs[day] = state.logs[day] || {};
+  state.logs[day][id] = (state.logs[day][id] || 0) + elapsedSec;
+  const habit = state.habits.find(h => h.id === id);
+  const pointsEarned = habit ? (elapsedSec / 60) * habit.rate : 0;
+  state.reward.pointBalance += pointsEarned;
+  state.totalPointsAllTime += pointsEarned;
+  delete state.activeTimers[id];
+  save(); render();
+}
+
+function addHabit() {
+  const name = document.getElementById('new-habit-name').value.trim();
+  const rate = parseFloat(document.getElementById('new-habit-rate').value);
+  const type = document.getElementById('new-habit-type').value;
+  if (!name) return;
+  state.habits.push({ id: genId(), name, rate: isNaN(rate) ? 10 : rate, type, createdAt: Date.now() });
+  addingHabit = false;
+  save(); render();
+}
+
+function deleteHabit(id) {
+  delete state.activeTimers[id];
+  state.habits = state.habits.filter(h => h.id !== id);
+  save(); render();
+}
+
+function addNegativeHabit() {
+  const name = document.getElementById('new-neg-name').value.trim();
+  const penalty = parseFloat(document.getElementById('new-neg-penalty').value);
+  const type = document.getElementById('new-neg-type').value;
+  if (!name) return;
+  state.negativeHabits.push({ id: genId(), name, penalty: isNaN(penalty) ? 5 : penalty, type, createdAt: Date.now() });
+  addingNegative = false;
+  save(); render();
+}
+
+function deleteNegativeHabit(id) {
+  state.negativeHabits = state.negativeHabits.filter(h => h.id !== id);
+  save(); render();
+}
+
+function logNegative(id) {
+  const day = localDateStr();
+  state.negativeLogs[day] = state.negativeLogs[day] || {};
+  state.negativeLogs[day][id] = (state.negativeLogs[day][id] || 0) + 1;
+  const nh = state.negativeHabits.find(h => h.id === id);
+  const penalty = nh ? nh.penalty : 0;
+  state.reward.pointBalance = Math.max(0, state.reward.pointBalance - penalty);
+  state.totalPointsAllTime = Math.max(0, state.totalPointsAllTime - penalty);
+  save(); render();
+}
+
+function convertPoints() {
+  if (state.reward.pointBalance <= 0) return;
+  const dollars = state.reward.pointBalance / state.reward.pointsPerDollar;
+  state.reward.history.unshift({ date: localDateStr(), points: state.reward.pointBalance, dollars });
+  state.reward.history = state.reward.history.slice(0, 12);
+  state.reward.dollarBalance += dollars;
+  state.reward.pointBalance = 0;
+  save(); render();
+}
+
+function saveRewardEdit() {
+  const goalName = document.getElementById('reward-goal-name').value.trim();
+  const targetAmount = parseFloat(document.getElementById('reward-target').value);
+  const pointsPerDollar = parseFloat(document.getElementById('reward-rate').value);
+  const dailyGoal = parseFloat(document.getElementById('reward-daily-goal').value);
+  if (goalName) state.reward.goalName = goalName;
+  if (!isNaN(targetAmount)) state.reward.targetAmount = targetAmount;
+  if (!isNaN(pointsPerDollar) && pointsPerDollar > 0) state.reward.pointsPerDollar = pointsPerDollar;
+  if (!isNaN(dailyGoal) && dailyGoal > 0) state.reward.dailyGoalPoints = dailyGoal;
+  editingReward = false;
+  save(); render();
+}
+
+function pointsForDay(dateStr) {
+  let pts = 0;
+  state.habits.forEach(h => {
+    const secs = (state.logs[dateStr] && state.logs[dateStr][h.id]) || 0;
+    pts += (secs / 60) * h.rate;
+  });
+  state.negativeHabits.forEach(h => {
+    const count = (state.negativeLogs[dateStr] && state.negativeLogs[dateStr][h.id]) || 0;
+    pts -= count * h.penalty;
+  });
+  return pts;
+}
+
+function todayPointsLive() {
+  let pts = pointsForDay(localDateStr());
+  state.habits.forEach(h => {
+    const start = state.activeTimers[h.id];
+    if (start) pts += (Math.max(0, Math.floor((Date.now() - start) / 1000)) / 60) * h.rate;
+  });
+  return pts;
+}
+
+function saveDailyGoal() {
+  const val = parseFloat(document.getElementById('daily-goal-input').value);
+  if (!isNaN(val) && val > 0) state.reward.dailyGoalPoints = val;
+  editingDailyGoal = false;
+  save(); render();
+}
+
+function starsForPoints(pts) {
+  const goal = state.reward.dailyGoalPoints || 50;
+  const raw = (Math.max(0, pts) / goal) * 10;
+  return Math.max(0, Math.min(10, Math.round(raw)));
+}
+
+function monthGrid(year, month) {
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < startWeekday; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+  return cells;
+}
+
+function renderMonthCalendar(year, month) {
+  const monthName = new Intl.DateTimeFormat('ar', { month: 'long', year: 'numeric' }).format(new Date(year, month, 1));
+  const cells = monthGrid(year, month);
+  const weekdayLabels = ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+  const todayStr = localDateStr();
+  const cellsHtml = cells.map(d => {
+    if (!d) return `<div class="cal-cell empty-cell"></div>`;
+    const dStr = localDateStr(d);
+    if (dStr > todayStr) return `<div class="cal-cell"><span class="cal-day">${d.getDate()}</span></div>`;
+    const pts = pointsForDay(dStr);
+    const stars = starsForPoints(pts);
+    const alpha = stars / 10;
+    return `<div class="cal-cell" style="background:rgba(201,162,75,${(0.08 + alpha * 0.55).toFixed(2)})">
+      <span class="cal-day">${d.getDate()}</span>
+      <span class="cal-stars">★${stars}</span>
+    </div>`;
+  }).join('');
+  return `
+    <div class="month-block">
+      <div class="month-title">${monthName}</div>
+      <div class="cal-weekdays">${weekdayLabels.map(w => `<span>${w}</span>`).join('')}</div>
+      <div class="cal-grid">${cellsHtml}</div>
+    </div>`;
+}
+
+/* ---------- Streak chart (per-habit line chart: x = day, y = time) ---------- */
+function buildWeekData(habitId) {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dStr = localDateStr(d);
+    const secs = (state.logs[dStr] && state.logs[dStr][habitId]) || 0;
+    const isToday = dStr === localDateStr();
+    days.push({
+      dStr,
+      label: isToday ? 'اليوم' : new Intl.DateTimeFormat('ar', { weekday: 'short' }).format(d),
+      minutes: Math.round((secs / 60) * 10) / 10,
+    });
+  }
+  return days;
+}
+
+function lineChartSVG(days, color) {
+  const w = 320, h = 160, padL = 34, padR = 10, padT = 14, padB = 26;
+  const maxVal = Math.max(5, ...days.map(d => d.minutes));
+  const stepX = (w - padL - padR) / (days.length - 1);
+  const scaleY = (h - padT - padB) / maxVal;
+  const points = days.map((d, i) => ({
+    x: padL + i * stepX,
+    y: h - padB - d.minutes * scaleY,
+    ...d,
+  }));
+  const pathD = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const gridLines = [0, 0.5, 1].map(f => {
+    const y = h - padB - f * maxVal * scaleY;
+    const val = Math.round(f * maxVal);
+    return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w - padR}" y2="${y.toFixed(1)}" style="stroke:var(--border);stroke-width:1" />
+            <text x="${padL - 6}" y="${(y + 3).toFixed(1)}" font-size="8" style="fill:var(--text-muted)" text-anchor="end">${val}د</text>`;
+  }).join('');
+  const dots = points.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.2" fill="${color}" />`).join('');
+  const valueLabels = points.map(p => p.minutes > 0
+    ? `<text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}" font-size="8" style="fill:${color}" text-anchor="middle" font-weight="700">${p.minutes}</text>`
+    : '').join('');
+  const xLabels = points.map(p => `<text x="${p.x.toFixed(1)}" y="${h - 8}" font-size="9" style="fill:var(--text-muted)" text-anchor="middle">${p.label}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto; direction:ltr;">
+    ${gridLines}
+    <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />
+    ${dots}
+    ${valueLabels}
+    ${xLabels}
+  </svg>`;
+}
+
+/* ---------- Goals / journaling with reminders ---------- */
+function addGoal() {
+  const habit = document.getElementById('goal-habit').value.trim();
+  const place = document.getElementById('goal-place').value.trim();
+  const time = document.getElementById('goal-time').value;
+  if (!habit || !place || !time) return;
+  state.goals.push({ id: genId(), habit, place, time, lastNotifiedDate: null, createdAt: Date.now() });
+  document.getElementById('goal-habit').value = '';
+  document.getElementById('goal-place').value = '';
+  document.getElementById('goal-time').value = '';
+  save(); render();
+  requestNotifPermission();
+}
+
+function deleteGoal(id) {
+  state.goals = state.goals.filter(g => g.id !== id);
+  save(); render();
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') Notification.requestPermission().then(() => render());
+}
+
+function notifStatusText() {
+  if (!('Notification' in window)) return 'المتصفح لا يدعم التنبيهات';
+  if (Notification.permission === 'granted') return 'مفعّلة ✅';
+  if (Notification.permission === 'denied') return 'مرفوضة من المتصفح — فعّلها من إعدادات الموقع';
+  return 'غير مفعّلة';
+}
+
+function checkGoalNotifications() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const now = new Date();
+  const hhmm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const today = localDateStr();
+  let changed = false;
+  state.goals.forEach(g => {
+    if (g.time === hhmm && g.lastNotifiedDate !== today) {
+      try {
+        new Notification('تذكير بعادة 🎯', { body: `حان وقت: ${g.habit} في ${g.place}` });
+      } catch (e) {}
+      g.lastNotifiedDate = today;
+      changed = true;
+    }
+  });
+  if (changed) save();
+}
+
+/* ---------- Tab renderers ---------- */
+function renderHabitsTab() {
+  const todayTotal = state.habits.reduce((sum, h) => sum + getHabitSecondsToday(h.id), 0);
+  const dateHeader = new Intl.DateTimeFormat('ar', { weekday: 'long', day: 'numeric', month: 'long', numberingSystem: 'latn' }).format(new Date());
+  const typeTag = (t) => t === 'temporary' ? `<span class="tag">تنحذف بعد ٢٤س</span>` : '';
+
+  const habitsHtml = state.habits.length === 0
+    ? `<div class="empty">لا توجد عادات بعد. أضف أول عادة لتبدأ التتبع.</div>`
+    : state.habits.map((h, i) => {
+      const running = !!state.activeTimers[h.id];
+      const seconds = getHabitDisplaySeconds(h.id);
+      return `
+        <div class="habit-row">
+          <span class="dot" style="background:${SERIES_COLORS[i % SERIES_COLORS.length]}"></span>
+          <div class="habit-info">
+            <div class="name">${h.name}</div>
+            <div class="rate">${h.rate} نقطة/دقيقة ${typeTag(h.type)}</div>
+          </div>
+          <span class="habit-time">${formatDuration(seconds)}</span>
+          <button class="icon-btn ${running ? 'stop' : 'play'}" data-action="${running ? 'stop' : 'start'}" data-id="${h.id}">${running ? '❚❚' : '▶'}</button>
+          <button class="icon-btn del" data-action="delete" data-id="${h.id}">✕</button>
+        </div>`;
+    }).join('');
+
+  const addFormHtml = addingHabit ? `
+    <div class="card add-form">
+      <div class="field">
+        <label>اسم العادة</label>
+        <input id="new-habit-name" placeholder="مثال: تمارين رياضية" />
+      </div>
+      <div class="field small">
+        <label>نقطة/دقيقة</label>
+        <input id="new-habit-rate" type="number" value="10" />
+      </div>
+      <div class="field mid">
+        <label>نوع العادة</label>
+        <select id="new-habit-type">
+          <option value="recurring">تتكرر يوميًا</option>
+          <option value="temporary">تنحذف بعد ٢٤ ساعة</option>
+        </select>
+      </div>
+      <button class="btn-solid" data-action="save-add-habit">حفظ</button>
+    </div>` : '';
+
+  const negRowsHtml = state.negativeHabits.length === 0
+    ? `<div class="empty">لا توجد عادات سلبية مضافة.</div>`
+    : state.negativeHabits.map((h) => {
+      const todayCount = (state.negativeLogs[localDateStr()] && state.negativeLogs[localDateStr()][h.id]) || 0;
+      return `
+        <div class="habit-row">
+          <span class="dot" style="background:${'#B5563B'}"></span>
+          <div class="habit-info">
+            <div class="name">${h.name}</div>
+            <div class="rate">-${h.penalty} نقطة/مرة ${typeTag(h.type)} · اليوم: ${todayCount}</div>
+          </div>
+          <button class="btn-rust" data-action="log-negative" data-id="${h.id}">سجّل</button>
+          <button class="icon-btn del" data-action="delete-negative" data-id="${h.id}">✕</button>
+        </div>`;
+    }).join('');
+
+  const addNegFormHtml = addingNegative ? `
+    <div class="card add-form">
+      <div class="field">
+        <label>اسم العادة السلبية</label>
+        <input id="new-neg-name" placeholder="مثال: تدخين" />
+      </div>
+      <div class="field small">
+        <label>نقاط خصم/مرة</label>
+        <input id="new-neg-penalty" type="number" value="5" />
+      </div>
+      <div class="field mid">
+        <label>نوع العادة</label>
+        <select id="new-neg-type">
+          <option value="recurring">تتكرر يوميًا</option>
+          <option value="temporary">تنحذف بعد ٢٤ ساعة</option>
+        </select>
+      </div>
+      <button class="btn-solid" data-action="save-add-negative">حفظ</button>
+    </div>` : '';
+
+  return `
+    <div class="header">
+      <div class="corner-total">⭐ ${Math.round(state.totalPointsAllTime)}</div>
+      <div class="date">${dateHeader}</div>
+      <div class="hero">
+        <span class="num">${formatDuration(todayTotal)}</span>
+        <span class="label">مجموع وقت التركيز اليوم</span>
+      </div>
+      <div class="today-points">نقاط اليوم: <b>${Math.round(todayPointsLive())}</b></div>
+    </div>
+
+    <div class="section">
+      <div class="row-between">
+        <h2>العادات</h2>
+        <button class="link-btn" data-action="toggle-add">+ إضافة عادة</button>
+      </div>
+      ${addFormHtml}
+      <div>${habitsHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="row-between">
+        <h2>عادات سلبية</h2>
+        <button class="link-btn rust" data-action="toggle-add-negative">+ إضافة عادة سلبية</button>
+      </div>
+      ${addNegFormHtml}
+      <div>${negRowsHtml}</div>
+    </div>
+  `;
+}
+
+function renderStreaksTab() {
+  const body = state.habits.length === 0
+    ? `<div class="empty">أضف عادة من تبويب «العادات» لترى سلسلتها هنا.</div>`
+    : state.habits.map((h, i) => {
+      const color = SERIES_COLORS[i % SERIES_COLORS.length];
+      const days = buildWeekData(h.id);
+      const weekTotal = Math.round(days.reduce((s, d) => s + d.minutes, 0));
+      return `
+        <div class="card streak-card">
+          <div class="s-title"><span class="dot" style="background:${color}"></span>${h.name}</div>
+          <div class="s-sub">آخر ٧ أيام · مجموع الأسبوع: ${weekTotal} دقيقة</div>
+          ${lineChartSVG(days, color)}
+        </div>`;
+    }).join('');
+
+  return `
+    <div class="page-title">السلسلة المتواصلة</div>
+    <div class="section">${body}</div>
+  `;
+}
+
+function renderCalendarTab() {
+  const now = new Date();
+  const calendarsHtml = [0, 1, 2].map(offset => {
+    const d = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+    return renderMonthCalendar(d.getFullYear(), d.getMonth());
+  }).join('');
+
+  const goalCardHtml = editingDailyGoal ? `
+    <div class="card add-form" style="margin-bottom:20px;">
+      <div class="field small">
+        <label>هدف نقاط اليوم (١٠ نجوم)</label>
+        <input id="daily-goal-input" type="number" value="${state.reward.dailyGoalPoints}" />
+      </div>
+      <button class="btn-solid" data-action="save-daily-goal">حفظ</button>
+      <button class="btn-outline" data-action="cancel-daily-goal">إلغاء</button>
+    </div>
+  ` : `
+    <div class="card" style="margin-bottom:20px;">
+      <div class="row-between" style="margin-bottom:0;">
+        <div>
+          <div class="points-label">التارغت اليومي (للحصول على ١٠ نجوم)</div>
+          <div class="points-value">${Math.round(state.reward.dailyGoalPoints)} نقطة</div>
+        </div>
+        <button class="muted-btn" data-action="edit-daily-goal">✎ تعديل</button>
+      </div>
+      <div class="s-sub" style="margin-top:8px; margin-bottom:0;">
+        إذا حققت التارغت بالكامل أو أكثر بأي يوم بتاخد ⭐️ ١٠/١٠. وإذا حققت جزء منه، التقييم بيكون نسبي حسب عدد النقاط اللي عملتها — مثلاً نص التارغت = ٥ نجوم تقريبًا.
+      </div>
+    </div>
+  `;
+
+  return `
+    <div class="page-title">التقويم — تقييم الأيام بالنجوم</div>
+    ${goalCardHtml}
+    <div class="section">${calendarsHtml}</div>
+  `;
+}
+
+function renderGoalsTab() {
+  const goalsHtml = state.goals.length === 0
+    ? `<div class="empty">لم تُسجّل أي أهداف بعد.</div>`
+    : state.goals.map(g => `
+      <div class="goal-item">
+        <span class="g-icon">🎯</span>
+        <div class="g-body">سأقوم بـ <b>${g.habit}</b> في <span class="g-place">${g.place}</span> وذلك عند الساعة <span class="g-time">${g.time}</span></div>
+        <button class="icon-btn del" data-action="delete-goal" data-id="${g.id}">✕</button>
+      </div>`).join('');
+
+  return `
+    <div class="page-title">تدوين الأهداف</div>
+
+    <div class="notif-status">
+      <span>حالة التنبيهات: <b>${notifStatusText()}</b></span>
+      ${('Notification' in window) && Notification.permission !== 'granted'
+        ? `<button class="link-btn" data-action="enable-notif">تفعيل</button>` : ''}
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="goal-sentence">
+        سوف اقوم بـ
+        <input id="goal-habit" placeholder="العادة" />
+        في
+        <input id="goal-place" placeholder="المكان" />
+        وذلك عند الوقت
+        <input id="goal-time" type="time" />
+      </div>
+      <button class="btn-solid" data-action="save-goal">حفظ الهدف</button>
+    </div>
+
+    <div class="section">
+      <h2>أهدافي المسجّلة</h2>
+      <div>${goalsHtml}</div>
+    </div>
+  `;
+}
+
+function renderRewardTab() {
+  const progressPct = Math.min(100, (state.reward.dollarBalance / (state.reward.targetAmount || 1)) * 100);
+  const historyHtml = state.reward.history.length > 0 ? `
+    <div class="history">
+      <div class="h-title">سجل التحويلات</div>
+      ${state.reward.history.map(e => `
+        <div class="h-item"><span class="d">${e.date}</span><span>${Math.round(e.points)} نقطة → $${e.dollars.toFixed(2)}</span></div>
+      `).join('')}
+    </div>` : '';
+
+  const rewardBodyHtml = editingReward ? `
+    <div class="field" style="margin-bottom:12px;">
+      <label>اسم الهدف</label>
+      <input id="reward-goal-name" value="${state.reward.goalName}" />
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+      <div class="field">
+        <label>المبلغ المستهدف ($)</label>
+        <input id="reward-target" type="number" value="${state.reward.targetAmount}" />
+      </div>
+      <div class="field">
+        <label>نقطة مقابل الدولار</label>
+        <input id="reward-rate" type="number" value="${state.reward.pointsPerDollar}" />
+      </div>
+      <div class="field">
+        <label>هدف نقاط اليوم (لـ ١٠ نجوم)</label>
+        <input id="reward-daily-goal" type="number" value="${state.reward.dailyGoalPoints}" />
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-solid" data-action="save-reward">حفظ</button>
+      <button class="btn-outline" data-action="cancel-reward">إلغاء</button>
+    </div>
+  ` : `
+    <div class="reward-top">
+      <div class="reward-goal">🪙 ${state.reward.goalName}</div>
+      <span class="points-label">$${state.reward.dollarBalance.toFixed(2)} / $${state.reward.targetAmount}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
+    <div class="points-row">
+      <div>
+        <div class="points-label">رصيد النقاط الحالي</div>
+        <div class="points-value">${Math.round(state.reward.pointBalance)}</div>
+        <div class="points-est">≈ $${(state.reward.pointBalance / state.reward.pointsPerDollar).toFixed(2)} عند التحويل</div>
+      </div>
+      <button class="btn-teal" data-action="convert" ${state.reward.pointBalance <= 0 ? 'disabled' : ''}>تحويل إلى دولارات</button>
+    </div>
+    ${historyHtml}
+  `;
+
+  return `
+    <div class="section">
+      <div class="row-between">
+        <div class="page-title" style="margin:0;">المكافأة</div>
+        ${!editingReward ? `<button class="muted-btn" data-action="edit-reward">✎ تعديل</button>` : ''}
+      </div>
+      <div class="card">${rewardBodyHtml}</div>
+    </div>
+  `;
+}
+
+function render() {
+  pruneTemporary();
+  const app = document.getElementById('app');
+
+  const tabbarHtml = `
+    <div class="tabbar">
+      ${TABS.map(t => `
+        <button class="tab-btn ${activeTab === t.id ? 'active' : ''}" data-action="switch-tab" data-tab="${t.id}">
+          <span class="tab-icon">${t.icon}</span>${t.label}
+        </button>`).join('')}
+    </div>`;
+
+  let contentHtml = '';
+  if (activeTab === 'habits') contentHtml = renderHabitsTab();
+  else if (activeTab === 'streaks') contentHtml = renderStreaksTab();
+  else if (activeTab === 'calendar') contentHtml = renderCalendarTab();
+  else if (activeTab === 'goals') contentHtml = renderGoalsTab();
+  else if (activeTab === 'reward') contentHtml = renderRewardTab();
+
+  app.innerHTML = `
+    <div class="wrap">
+      ${tabbarHtml}
+      ${contentHtml}
+    </div>
+  `;
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  if (action === 'switch-tab') { activeTab = btn.dataset.tab; render(); }
+  else if (action === 'start') startTimer(id);
+  else if (action === 'stop') stopTimer(id);
+  else if (action === 'delete') deleteHabit(id);
+  else if (action === 'toggle-add') { addingHabit = !addingHabit; render(); }
+  else if (action === 'save-add-habit') addHabit();
+  else if (action === 'toggle-add-negative') { addingNegative = !addingNegative; render(); }
+  else if (action === 'save-add-negative') addNegativeHabit();
+  else if (action === 'delete-negative') deleteNegativeHabit(id);
+  else if (action === 'log-negative') logNegative(id);
+  else if (action === 'convert') convertPoints();
+  else if (action === 'edit-reward') { editingReward = true; render(); }
+  else if (action === 'save-reward') saveRewardEdit();
+  else if (action === 'cancel-reward') { editingReward = false; render(); }
+  else if (action === 'save-goal') addGoal();
+  else if (action === 'delete-goal') deleteGoal(id);
+  else if (action === 'enable-notif') requestNotifPermission();
+  else if (action === 'edit-daily-goal') { editingDailyGoal = true; render(); }
+  else if (action === 'save-daily-goal') saveDailyGoal();
+  else if (action === 'cancel-daily-goal') { editingDailyGoal = false; render(); }
+});
+
+setInterval(() => {
+  checkGoalNotifications();
+  // Only the "العادات" tab has live-ticking timers, so it's the only tab that
+  // needs a per-second re-render. Re-rendering other tabs while the user is
+  // typing (e.g. in the الأهداف form) would wipe out what they just typed.
+  if (activeTab === 'habits' && !addingHabit && !addingNegative && !editingReward) render();
+}, 1000);
+
+if ('Notification' in window && Notification.permission === 'default' && state.goals.length > 0) {
+  // don't auto-prompt without user gesture on some browsers; status shown in Goals tab instead
+}
+
+render();
+</script>
+</body>
+</html>
