@@ -401,10 +401,11 @@ function genId() { return Date.now().toString(36) + Math.random().toString(36).s
 
 function defaultData() {
   return {
-    habits: [{ id: genId(), name: 'قراءة كتاب', rate: 10, type: 'recurring', category: 'secondary', minMinutes: 0, penalty: 0, createdAt: Date.now() }],
+    habits: [{ id: genId(), name: 'قراءة كتاب', rate: 10, mode: 'time', type: 'recurring', category: 'secondary', minMinutes: 0, penalty: 0, createdAt: Date.now() }],
     negativeHabits: [],
     logs: {},
     negativeLogs: {},
+    fixedLogs: {},
     activeTimers: {},
     totalPointsAllTime: 0,
     goals: [],
@@ -434,6 +435,7 @@ function load() {
     const p = JSON.parse(raw);
     p.negativeHabits = p.negativeHabits || [];
     p.negativeLogs = p.negativeLogs || {};
+    p.fixedLogs = p.fixedLogs || {};
     p.totalPointsAllTime = typeof p.totalPointsAllTime === 'number' ? p.totalPointsAllTime : 0;
     p.logs = p.logs || {};
     p.activeTimers = p.activeTimers || {};
@@ -453,10 +455,10 @@ function load() {
     p.plan.done = p.plan.done || {};
     p.lastPenaltyCheckDate = p.lastPenaltyCheckDate || localDateStr();
     p.penaltyLog = p.penaltyLog || [];
-    p.habits = (p.habits || []).map(h => ({ type: 'recurring', category: 'secondary', minMinutes: 0, penalty: 0, createdAt: Date.now(), ...h }));
+    p.habits = (p.habits || []).map(h => ({ type: 'recurring', category: 'secondary', mode: 'time', minMinutes: 0, penalty: 0, createdAt: Date.now(), ...h }));
     p.negativeHabits = (p.negativeHabits || []).map(h => {
       const rate = h.rate !== undefined ? h.rate : (h.penalty !== undefined ? h.penalty : 5);
-      return { type: 'recurring', createdAt: Date.now(), ...h, rate };
+      return { type: 'recurring', mode: 'time', createdAt: Date.now(), ...h, rate };
     });
     return p;
   } catch (e) { return defaultData(); }
@@ -567,8 +569,10 @@ function addHabit() {
   const rate = parseFloat(document.getElementById('new-habit-rate').value);
   const type = document.getElementById('new-habit-type').value;
   const category = document.getElementById('new-habit-category').value;
+  const modeEl = document.getElementById('new-habit-mode');
+  const mode = category === 'primary' ? 'time' : ((modeEl && modeEl.value) || 'time');
   if (!name) return;
-  const habit = { id: genId(), name, rate: isNaN(rate) ? 10 : rate, type, category, createdAt: Date.now(), minMinutes: 0, penalty: 0 };
+  const habit = { id: genId(), name, rate: isNaN(rate) ? 10 : rate, mode, type, category, createdAt: Date.now(), minMinutes: 0, penalty: 0 };
   if (category === 'primary') {
     const minMinutes = parseFloat(document.getElementById('new-habit-min').value);
     const penalty = parseFloat(document.getElementById('new-habit-penalty').value);
@@ -590,8 +594,10 @@ function addNegativeHabit() {
   const name = document.getElementById('new-neg-name').value.trim();
   const rate = parseFloat(document.getElementById('new-neg-rate').value);
   const type = document.getElementById('new-neg-type').value;
+  const modeEl = document.getElementById('new-neg-mode');
+  const mode = (modeEl && modeEl.value) || 'time';
   if (!name) return;
-  state.negativeHabits.push({ id: genId(), name, rate: isNaN(rate) ? 5 : rate, type, createdAt: Date.now() });
+  state.negativeHabits.push({ id: genId(), name, rate: isNaN(rate) ? 5 : rate, mode, type, createdAt: Date.now() });
   addingNegative = false;
   save(); render();
 }
@@ -600,6 +606,28 @@ function deleteNegativeHabit(id) {
   state.negativeHabits = state.negativeHabits.filter(h => h.id !== id);
   save(); render();
 }
+
+/* ---------- عادات "مهمة ثابتة": تُعلَّم منجزة/غير منجزة باليوم بدل عداد وقت ---------- */
+function toggleFixedHabit(id) {
+  const today = localDateStr();
+  state.fixedLogs[today] = state.fixedLogs[today] || {};
+  const rec = state.fixedLogs[today];
+  if (rec[id] !== undefined) {
+    state.reward.pointBalance -= rec[id];
+    state.totalPointsAllTime -= rec[id];
+    delete rec[id];
+  } else {
+    const posHabit = state.habits.find(h => h.id === id);
+    const negHabit = state.negativeHabits.find(h => h.id === id);
+    const signed = posHabit ? posHabit.rate : (negHabit ? -negHabit.rate : 0);
+    rec[id] = signed;
+    state.reward.pointBalance += signed;
+    state.totalPointsAllTime += signed;
+  }
+  save(); render();
+}
+
+
 
 function convertPoints() {
   if (state.reward.pointBalance <= 0) return;
@@ -660,6 +688,8 @@ function pointsForDay(dateStr) {
     const secs = (state.negativeLogs[dateStr] && state.negativeLogs[dateStr][h.id]) || 0;
     pts -= (secs / 60) * h.rate;
   });
+  const fixedRec = state.fixedLogs[dateStr] || {};
+  Object.keys(fixedRec).forEach(id => { pts += fixedRec[id]; });
   pts += planPointsForDate(dateStr);
   return pts;
 }
@@ -870,9 +900,23 @@ function renderHabitsTab() {
   const secondaryEntries = habitsWithIdx.filter(e => e.h.category !== 'primary');
 
   function renderHabitRow({ h, i }) {
+    const isPrimary = h.category === 'primary';
+    const isFixed = h.mode === 'fixed' && !isPrimary;
+
+    if (isFixed) {
+      const today = localDateStr();
+      const doneToday = !!(state.fixedLogs[today] && state.fixedLogs[today][h.id] !== undefined);
+      return `
+        <div class="task-row ${doneToday ? 'done' : ''}" data-action="toggle-fixed" data-id="${h.id}">
+          <span class="task-box">${doneToday ? '✓' : ''}</span>
+          <span class="task-text">${h.name}${typeTag(h.type) ? ' ' + typeTag(h.type) : ''}</span>
+          <span class="task-pts">+${h.rate}</span>
+          <button class="icon-btn del" data-action="delete" data-id="${h.id}" style="width:30px;height:30px;font-size:12px;">✕</button>
+        </div>`;
+    }
+
     const running = !!state.activeTimers[h.id];
     const seconds = getHabitDisplaySeconds(h.id);
-    const isPrimary = h.category === 'primary';
     let progressHtml = '';
     if (isPrimary) {
       const doneMin = getHabitSecondsToday(h.id) / 60;
@@ -935,8 +979,15 @@ function renderHabitsTab() {
         <label>اسم العادة</label>
         <input id="new-habit-name" placeholder="مثال: تمارين رياضية" />
       </div>
+      <div class="field mid">
+        <label>طريقة الإنجاز</label>
+        <select id="new-habit-mode" onchange="document.getElementById('new-habit-rate-label').textContent = this.value === 'fixed' ? 'نقاط عند الإنجاز' : 'نقطة/دقيقة';">
+          <option value="time">تعتمد على الوقت (مؤقّت تشغّله وتوقفه)</option>
+          <option value="fixed">مهمة ثابتة (تعلّمها منجزة باليوم)</option>
+        </select>
+      </div>
       <div class="field small">
-        <label>نقطة/دقيقة</label>
+        <label id="new-habit-rate-label">نقطة/دقيقة</label>
         <input id="new-habit-rate" type="number" value="10" />
       </div>
       <div class="field mid">
@@ -948,9 +999,14 @@ function renderHabitsTab() {
       </div>
       <div class="field mid">
         <label>تصنيف العادة</label>
-        <select id="new-habit-category" onchange="document.getElementById('primary-fields').style.display = this.value === 'primary' ? 'flex' : 'none';">
+        <select id="new-habit-category" onchange="
+          document.getElementById('primary-fields').style.display = this.value === 'primary' ? 'flex' : 'none';
+          const modeSel = document.getElementById('new-habit-mode');
+          modeSel.disabled = this.value === 'primary';
+          if (this.value === 'primary') { modeSel.value = 'time'; document.getElementById('new-habit-rate-label').textContent = 'نقطة/دقيقة'; }
+        ">
           <option value="secondary">ثانوية (الطريقة الافتراضية)</option>
-          <option value="primary">رئيسية (حد أدنى للوقت + خصم)</option>
+          <option value="primary">رئيسية (حد أدنى للوقت + خصم — تبقى بالمؤقّت)</option>
         </select>
       </div>
       <div id="primary-fields" style="display:none; gap:12px; flex-wrap:wrap; flex-basis:100%;">
@@ -969,6 +1025,17 @@ function renderHabitsTab() {
   const negRowsHtml = state.negativeHabits.length === 0
     ? `<div class="empty">لا توجد عادات سلبية مضافة.</div>`
     : state.negativeHabits.map((h) => {
+      if (h.mode === 'fixed') {
+        const today = localDateStr();
+        const doneToday = !!(state.fixedLogs[today] && state.fixedLogs[today][h.id] !== undefined);
+        return `
+          <div class="task-row ${doneToday ? 'done' : ''}" data-action="toggle-fixed" data-id="${h.id}">
+            <span class="task-box" style="${doneToday ? 'background:var(--rust);border-color:var(--rust);' : ''}">${doneToday ? '✓' : ''}</span>
+            <span class="task-text">${h.name}${typeTag(h.type) ? ' ' + typeTag(h.type) : ''}</span>
+            <span class="task-pts" style="color:var(--rust);">-${h.rate}</span>
+            <button class="icon-btn del" data-action="delete-negative" data-id="${h.id}" style="width:30px;height:30px;font-size:12px;">✕</button>
+          </div>`;
+      }
       const running = !!state.activeTimers[h.id];
       const seconds = getHabitDisplaySeconds(h.id);
       const todaySecs = getNegativeSecondsToday(h.id);
@@ -991,8 +1058,15 @@ function renderHabitsTab() {
         <label>اسم العادة السلبية</label>
         <input id="new-neg-name" placeholder="مثال: سكرول موبايل" />
       </div>
+      <div class="field mid">
+        <label>طريقة الحساب</label>
+        <select id="new-neg-mode" onchange="document.getElementById('new-neg-rate-label').textContent = this.value === 'fixed' ? 'خصم عند حدوثها' : 'نقطة خصم/دقيقة';">
+          <option value="time">تعتمد على الوقت (مؤقّت)</option>
+          <option value="fixed">مهمة ثابتة (تعلّمها صارت باليوم)</option>
+        </select>
+      </div>
       <div class="field small">
-        <label>نقطة خصم/دقيقة</label>
+        <label id="new-neg-rate-label">نقطة خصم/دقيقة</label>
         <input id="new-neg-rate" type="number" value="5" />
       </div>
       <div class="field mid">
@@ -1417,6 +1491,7 @@ document.addEventListener('click', (e) => {
   else if (action === 'toggle-add-negative') { addingNegative = !addingNegative; render(); }
   else if (action === 'save-add-negative') addNegativeHabit();
   else if (action === 'delete-negative') deleteNegativeHabit(id);
+  else if (action === 'toggle-fixed') toggleFixedHabit(id);
   else if (action === 'convert') convertPoints();
   else if (action === 'claim-secondary') claimSecondary();
   else if (action === 'edit-reward') { editingReward = true; render(); }
