@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>متعقب العادات</title>
+<title>متعقب العادات + خطة ٩٠ يوم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
@@ -40,7 +40,6 @@
 
   .wrap { max-width: 900px; margin: 0 auto; padding: 18px var(--edge) 130px; position: relative; }
 
-  /* decorative editorial margin mark — desktop only, pure chrome */
   .wrap::before {
     content: "ATLAS — HABIT LEDGER";
     position: fixed; top: 50%; inset-inline-end: 10px; transform: translateY(-50%) rotate(180deg);
@@ -68,7 +67,6 @@
     .section:nth-of-type(3) { animation-delay: .12s; }
   }
 
-  /* Tab bar — a numbered masthead, not a pill row */
   .tabbar {
     position: sticky; top: 0; z-index: 20; background: rgba(18,17,16,0.9); backdrop-filter: blur(8px);
     display: flex; gap: clamp(6px, 3vw, 26px); overflow-x: auto; padding: 16px 0 13px;
@@ -91,10 +89,12 @@
   .header .date { color: var(--text-muted); font-size: 14px; }
   .header .hero { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 26px; }
   .header .hero .num { color: var(--text); font-size: var(--hero); line-height: .92; font-weight: 800; }
+  .header .hero .num.neg { color: var(--rust); }
   .header .hero .label { color: var(--text-muted); font-size: 13.5px; max-width: 220px; line-height: 1.6; padding-inline-end: 18px; border-inline-end: 1px solid var(--border); padding-bottom: 8px; }
-  .header .today-points { margin-top: 22px; color: var(--text-muted); font-size: 12.5px; font-family: var(--mono); display: flex; align-items: center; gap: 8px; }
+  .header .today-points { margin-top: 22px; color: var(--text-muted); font-size: 12.5px; font-family: var(--mono); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .header .today-points::before { content: ''; width: 6px; height: 6px; background: var(--gold); flex-shrink: 0; }
   .header .today-points b { color: var(--text); font-size: 14.5px; }
+  .header .today-points b.neg { color: var(--rust); }
 
   h2 { font-size: clamp(1.05rem, 3vw, 1.3rem); margin: 0; }
   .page-title { font-size: clamp(1.7rem, 6vw, 2.4rem); margin: 0 0 30px; }
@@ -151,35 +151,36 @@
   .cal-cell.empty-cell { border: none; }
   .cal-day { font-weight: 600; font-size: 11px; }
   .cal-stars { color: var(--gold); font-size: 9px; font-weight: 600; }
+  .cal-cell.minus { border-color: var(--rust); }
+  .cal-cell.minus .cal-stars { color: var(--rust); }
 
   .reward-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
   .reward-goal { display: flex; align-items: center; gap: 8px; font-size: 17px; }
   .progress-bar { background: var(--border); height: 2px; border-radius: 0; overflow: visible; margin-bottom: 20px; position: relative; }
   .progress-fill { background: var(--gold); height: 100%; position: relative; transition: width .4s ease; }
   .progress-fill::after { content: ''; position: absolute; top: 50%; inset-inline-end: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); transform: translateY(-50%); }
-  .points-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .points-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .points-label { color: var(--text-dim); font-size: 10.5px; letter-spacing: .08em; font-family: var(--mono); }
   .points-value { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .points-value.neg { color: var(--rust); }
   .points-est { color: var(--text-muted); font-size: 11.5px; }
   .history { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 14px; }
   .history .h-title { color: var(--text-dim); font-size: 10.5px; letter-spacing: .1em; margin-bottom: 10px; font-family: var(--mono); }
-  .history .h-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .history .h-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; gap: 10px; }
   .history .h-item .d { color: var(--text-dim); }
 
-  /* Streaks tab */
   .streak-card { margin-bottom: 26px; }
   .streak-card .s-title { display: flex; align-items: center; gap: 9px; font-size: 15.5px; margin-bottom: 4px; }
   .streak-card .s-sub { color: var(--text-dim); font-size: 11.5px; margin-bottom: 12px; font-family: var(--mono); }
   .streak-card svg text { font-family: var(--mono); }
 
-  /* Goals tab */
   .goal-sentence { line-height: 2.6; font-size: 15px; margin-bottom: 16px; color: var(--text-muted); }
   .goal-sentence input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--gold); font-family: var(--serif); font-weight: 700; border-radius: 0; padding: 4px 6px; outline: none; font-size: 15px; }
   .goal-sentence input:focus { border-color: var(--gold); }
   .goal-sentence input#goal-habit { width: 150px; }
   .goal-sentence input#goal-place { width: 130px; }
   .goal-sentence input#goal-time { width: 120px; color: var(--text); font-family: var(--mono); }
-  .notif-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; font-size: 12.5px; color: var(--text-muted); font-family: var(--mono); }
+  .notif-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; font-size: 12.5px; color: var(--text-muted); font-family: var(--mono); gap: 10px; }
   .notif-status b { color: var(--text); }
   .goal-item { display: flex; align-items: flex-start; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--border); }
   .goal-item .g-icon { color: var(--gold); font-size: 14px; margin-top: 5px; }
@@ -187,7 +188,6 @@
   .goal-item .g-body .g-time { color: var(--gold); }
   .goal-item .g-body .g-place { color: var(--teal); }
 
-  /* Primary tasks feature */
   .primary-progress { margin-top: 10px; width: 100%; }
   .penalty-note { font-size: 11px; color: var(--text-muted); letter-spacing: .01em; }
   .tag.primary-tag { border-color: var(--gold); color: var(--gold); }
@@ -196,18 +196,183 @@
   .banner-card.warn::before { background: var(--gold); }
   .banner-card.ok::before { background: var(--teal); }
   .banner-card .b-title { font-size: 15px; margin-bottom: 5px; }
-  .sub-heading { font-size: 10.5px; letter-spacing: .18em; color: var(--text-dim); margin: 32px 0 16px; display: flex; align-items: center; gap: 12px; }
+  .sub-heading { font-size: 10.5px; letter-spacing: .18em; color: var(--text-dim); margin: 32px 0 16px; display: flex; align-items: center; gap: 12px; font-family: var(--mono); }
   .sub-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ---------- 90-day plan ---------- */
+  .plan-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+  .plan-daynum { font-family: var(--serif); font-weight: 800; font-size: clamp(2.3rem, 8vw, 3.4rem); line-height: .95; }
+  .plan-daynum small { font-family: var(--mono); font-weight: 400; font-size: 13px; color: var(--text-muted); margin-inline-start: 8px; }
+  .plan-phase { color: var(--text-muted); font-size: 13px; line-height: 1.7; max-width: 320px; }
+  .plan-phase b { color: var(--text); font-family: var(--serif); font-size: 14.5px; display: block; }
+  .plan-nav { display: flex; align-items: center; gap: 8px; }
+  .plan-nav button { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 2px; min-width: 38px; height: 34px; cursor: pointer; font-size: 13px; font-family: var(--mono); padding: 0 10px; }
+  .plan-nav button:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+  .plan-nav button:disabled { color: var(--text-dim); cursor: default; }
+  .plan-meta { font-family: var(--mono); font-size: 11.5px; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .plan-meta b { color: var(--text); }
+  .phase-strip { display: flex; gap: 3px; margin-bottom: 26px; }
+  .phase-strip span { flex: 1; height: 3px; background: var(--border); }
+  .phase-strip span.on { background: var(--teal); }
+  .phase-strip span.now { background: var(--gold); }
+  .task-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 2px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .15s ease; }
+  .task-row:hover { background: var(--surface2); }
+  .task-box { width: 19px; height: 19px; border: 1px solid var(--border); border-radius: 2px; flex-shrink: 0; margin-top: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--bg); }
+  .task-row.done .task-box { background: var(--teal); border-color: var(--teal); }
+  .task-row.done .task-text { color: var(--text-dim); text-decoration: line-through; }
+  .task-text { flex: 1; font-size: 14.5px; line-height: 1.6; }
+  .task-pts { font-family: var(--mono); font-size: 11.5px; color: var(--gold); flex-shrink: 0; margin-top: 5px; }
+  .task-row.done .task-pts { color: var(--teal); }
+  .day-flag { border: 1px solid var(--border); border-inline-start: 3px solid var(--gold); border-radius: 2px; padding: 14px 18px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.7; color: var(--text-muted); }
+  .day-flag b { color: var(--text); font-family: var(--serif); font-size: 15px; }
 </style>
 </head>
 <body>
 <div id="app"></div>
 
 <script>
+/* ============================================================
+   خطة ٩٠ يوم — أكاديمية التداول
+   كل يوم مقسوم لمهام صغيرة وسهلة، كل مهمة إلها نقاط.
+   ============================================================ */
+const PLAN_MONTHS = [
+  { n: 1, from: 1,  to: 28, title: 'الشهر الأول — كسر حاجز البونص وإطلاق المسابقة', goal: 'طُعم جديد بدل البونص المنتهي، وأول تواصل حقيقي مع القائمة.' },
+  { n: 2, from: 29, to: 56, title: 'الشهر الثاني — إكمال الكورس وختام المسابقة', goal: 'تحويل متابعي المسابقة لمتعلمين فعليين، وختام يبني ولاء.' },
+  { n: 3, from: 57, to: 90, title: 'الشهر الثالث — التثبيت والنمو', goal: 'تحسين التصميم، تنظيم مصادر الدخل، وتقييم شامل.' },
+];
+
+const PLAN_WEEKS = [
+  { n: 1,  from: 1,  to: 7,  title: 'إصلاحات تقنية + محتوى تعريفي جديد' },
+  { n: 2,  from: 8,  to: 14, title: 'بناء بوابة المسابقة' },
+  { n: 3,  from: 15, to: 21, title: 'الإطلاق الرسمي للمسابقة' },
+  { n: 4,  from: 22, to: 28, title: 'بناء الزخم + بداية الكورس' },
+  { n: 5,  from: 29, to: 35, title: 'استمرار الزخم' },
+  { n: 6,  from: 36, to: 42, title: 'ختام المسابقة' },
+  { n: 7,  from: 43, to: 49, title: 'إكمال الكورس' },
+  { n: 8,  from: 50, to: 56, title: 'تثبيت العادة' },
+  { n: 9,  from: 57, to: 63, title: 'تحسين التصميم' },
+  { n: 10, from: 64, to: 70, title: 'الفيديوهات الخاصة وتوسيع البروكرات' },
+  { n: 11, from: 71, to: 77, title: 'تنظيم مصادر الدخل' },
+  { n: 12, from: 78, to: 84, title: 'دفعة نمو أخيرة' },
+  { n: 13, from: 85, to: 90, title: 'التقييم النهائي' },
+];
+
+/* ثوابت بتتكرر كل يوم — صغيرة وسريعة، هدفها تثبيت الإيقاع */
+const PLAN_ANCHORS = [
+  ['اقرأ مهام اليوم قبل ما تبدأ واختر من وين تبلّش', 5],
+  ['اشتغل ٦٠ دقيقة متواصلة والموبايل بغرفة تانية', 20],
+  ['رد على تعليقات ورسائل المتابعين', 10],
+  ['سجّل رقم اليوم بسطر واحد (تسجيلات / تفاعل / حسابات)', 5],
+  ['حدد أول مهمة لبكرة قبل ما تنام', 5],
+];
+
+/* مهام كل يوم: [النص، النقاط] */
+const PLAN_DAYS = {
+  1:  { f: 'مراجعة الموقع + تصوير فيديو "شو الجديد؟"', t: [['افتح الموقع على الرابط المنشور وسجّل حساب جديد كأنك زائر', 10], ['جرّب تسجيل الدخول والخروج ولوحة التحكم', 10], ['اكتب بورقة كل خطأ أو صفحة ناقصة لقيتها', 10], ['اكتب سكربت ٥ نقاط لفيديو "شو الجديد؟" بدون ذكر بونص أو بروكر', 15], ['صوّر الفيديو الطويل بجلسة وحدة', 25], ['قصّ منه ٤ مقاطع: تحدي / تعليمي / تحليل / تفاعلي', 20]] },
+  2:  { f: 'ميزة "نسيت كلمة المرور"', t: [['اطلب من Claude كود صفحة "نسيت كلمة المرور"', 10], ['ركّب الصفحة على الموقع', 20], ['جرّبها بإيميلك وتأكد إن الرابط بيوصل', 10], ['تأكد إن كلمة المرور الجديدة بتشتغل فعلاً', 10]] },
+  3:  { f: 'أول مقطع + قائمة البروكرات', t: [['انشر أول مقطع قصير (تعليمي) على كل المنصات', 10], ['اكتب قائمة البروكرات اللي عندك عقد وكالة فعلي معهم', 10], ['ارفق لكل بروكر رابط الوكالة الصحيح', 10], ['اضغط كل رابط وتأكد إنه شغال', 10]] },
+  4:  { f: 'صفحة البروكرات الموصى بها', t: [['اكتب لكل بروكر سطرين: مين هو وشو ميزته', 10], ['اطلب من Claude بناء صفحة البروكرات', 20], ['اربط الصفحة بقائمة الموقع الرئيسية', 10], ['انشر مقطع تحليل السوق', 10]] },
+  5:  { f: 'مراجعة صفحة البروكرات', t: [['افتح الصفحة من الموبايل على الرابط الحقيقي', 10], ['اضغط كل رابط وكالة وتأكد من التتبع', 10], ['صلّح أي خلل بالتصميم مع Claude', 15], ['انشر مقطع تفاعلي أو استفتاء', 10]] },
+  6:  { f: 'تحديد آلية المسابقة', t: [['حدد عدد الحسابات التجريبية', 10], ['حدد قيمة الرصيد الوهمي ومدة المسابقة', 10], ['اكتب شرط الفوز بجملة وحدة واضحة', 10], ['اكتب قوانين المسابقة بـ٥ نقاط', 15], ['انشر المقطع التعليمي', 10]] },
+  7:  { f: 'فتح الحسابات التجريبية', t: [['افتح الحسابات التجريبية عند البروكر يدويًا', 25], ['سجّل بيانات كل حساب بجدول (رقم / باسوورد / رصيد)', 15], ['تأكد إن كل حساب فيه الرصيد الصح', 10], ['انشر مقطع تحليل', 10]] },
+  8:  { f: 'صفحة تسجيل المسابقة + فيديو الإعلان', t: [['حدد حقول التسجيل: اسم، إيميل، رقم واتساب', 10], ['ابنِ صفحة تسجيل المسابقة مع Claude', 25], ['ابنِ جدول توزيع الحسابات على المسجلين', 20], ['اكتب سكربت فيديو "تحدي $10,000"', 15], ['صوّر الفيديو الطويل الثاني', 25]] },
+  9:  { f: 'لوحة المتصدرين', t: [['حدد أعمدة اللوحة: الترتيب، الاسم، الرصيد، نسبة الربح', 10], ['ابنِ صفحة لوحة المتصدرين مع Claude', 25], ['جرّبها ببيانات وهمية', 10], ['انشر مقطع تشويقي من فيديو التحدي', 10]] },
+  10: { f: 'تجربة كاملة قبل الإطلاق', t: [['سجّل بحساب وهمي بالمسابقة من البداية للنهاية', 15], ['تأكد إن الحساب انوزّع وظهر باللوحة', 10], ['صلّح كل خلل ظهر بالتجربة', 20], ['انشر مقطع تعليمي', 10]] },
+  11: { f: 'كتابة الإيميل الجماعي', t: [['اكتب ٣ عناوين مقترحة بدون كلمة بونص أو بروكر', 15], ['اختر أقوى عنوان وخليه قدامك', 5], ['اكتب نص الإيميل: التحدي، القوانين، رابط التسجيل', 25], ['راجع أول سطرين — لازم يكونوا عن التحدي بس', 10], ['انشر مقطع تحليل', 10]] },
+  12: { f: 'إرسال تجريبي لعينة صغيرة', t: [['اختر عينة ٢٠-٣٠ إيميل من القائمة', 10], ['فعّل تتبع الفتح والنقر بأداة الإيميل', 10], ['ارسل الإيميل للعينة', 15], ['انشر مقطع تفاعلي', 10]] },
+  13: { f: 'قراءة نتائج العينة', t: [['سجّل كم واحد فتح الإيميل', 10], ['سجّل كم واحد سجّل بالمسابقة', 10], ['عدّل العنوان أو النص حسب النتيجة', 20]] },
+  14: { f: 'تجهيز نهائي للإطلاق', t: [['قسّم قائمة الـ٥٠٠٠ لدفعات جاهزة', 15], ['جهّز منشور الإطلاق لكل منصة', 15], ['تأكد إن صفحة التسجيل واللوحة شغالين', 10], ['حدد ساعة الإرسال بكرة واكتبها', 5]] },
+  15: { f: 'إرسال الإيميل لكامل القائمة', t: [['ارسل الدفعة الأولى', 20], ['تابع وصولها وتأكد إنها ما راحت سبام', 15], ['ارسل باقي الدفعات', 25], ['سجّل أرقام أول ساعتين', 10]] },
+  16: { f: 'إعلان المسابقة على السوشال', t: [['انشر إعلان المسابقة على كل المنصات', 15], ['ثبّت المنشور على البروفايل', 5], ['انشر ستوري فيها الرابط', 10], ['رد على كل تعليق وسؤال عن المسابقة', 15]] },
+  17: { f: 'متابعة الأرقام', t: [['سجّل نسبة فتح الإيميل الكلية', 10], ['سجّل عدد المسجلين بالمسابقة', 10], ['انشر مقطع تحديث عن التحدي', 10], ['رد على الرسائل الخاصة', 10]] },
+  18: { f: 'توزيع أول دفعة حسابات', t: [['وزّع أول دفعة حسابات على المسجلين', 25], ['ارسل لكل مشترك بيانات حسابه', 20], ['انشر مقطع تعليمي', 10]] },
+  19: { f: 'أول تحديث أرصدة', t: [['حدّث أرصدة المسابقة على لوحة الأدمن', 15], ['تأكد إن الترتيب ظهر صح للمشتركين', 10], ['انشر مقطع تحليل', 10]] },
+  20: { f: 'منشور ترتيب المتصدرين', t: [['صمّم صورة ترتيب المتصدرين', 15], ['انشر منشور "تحديث الترتيب" مع الصورة', 15], ['اعمل استفتاء: مين رح يفوز؟', 10]] },
+  21: { f: 'مراجعة الأسبوع', t: [['اجمع أرقام الأسبوع: تسجيل، فتح إيميل، تفاعل', 15], ['حدد أضعف رقم وسبب ضعفه', 10], ['اكتب تعديل واحد بس تطبقه الأسبوع الجاي', 10]] },
+  22: { f: 'سكربت المستوى الأول', t: [['حدّث أرصدة المسابقة', 10], ['اكتب عناوين الـ٥ دروس للمستوى الأول', 10], ['اكتب سكربت الدرس ١ و٢', 20], ['اكتب سكربت الدرس ٣ و٤ و٥', 25]] },
+  23: { f: 'تسجيل درس ١ و٢', t: [['جهّز الكاميرا والإضاءة والصوت', 5], ['سجّل الدرس الأول', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  24: { f: 'تسجيل درس ٣ و٤', t: [['سجّل الدرس الثالث', 25], ['سجّل الدرس الرابع', 25], ['انشر محتوى اليوم', 10]] },
+  25: { f: 'تسجيل درس ٥', t: [['سجّل الدرس الخامس', 25], ['حدّث أرصدة المسابقة', 10], ['انشر محتوى اليوم', 10]] },
+  26: { f: 'رفع المستوى الأول', t: [['صدّر الدروس الخمسة بجودة مناسبة', 15], ['ارفعها على الموقع بالترتيب الصح', 25], ['اكتب ٥ أسئلة اختبار للمستوى الأول', 15], ['جرّب الاختبار بحساب طالب', 10]] },
+  27: { f: 'الإيميل الثاني', t: [['اعزل قائمة اللي ما فتحوا الإيميل الأول', 10], ['اكتب عنوان مختلف تمامًا: "شو صار بالمسابقة؟"', 15], ['ارسل الإيميل الثاني', 20], ['انشر محتوى اليوم', 10]] },
+  28: { f: 'تقييم الشهر الأول', t: [['اجمع أرقام الشهر: مسجلين، فتح، تفاعل، متابعين', 20], ['قارنها بهدفك بأول الشهر', 10], ['اكتب ٣ أولويات للشهر الثاني', 15]] },
+  29: { f: 'سكربت المستوى الثاني', t: [['حدّث أرصدة المسابقة', 10], ['اكتب عناوين دروس التحليل الفني الأساسي', 10], ['اكتب سكربت المستوى الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  30: { f: 'تسجيل درسين', t: [['سجّل الدرس الأول من المستوى الثاني', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  31: { f: 'تسجيل باقي المستوى الثاني', t: [['سجّل باقي دروس المستوى الثاني', 30], ['راجع التسجيلات بسرعة قبل التصدير', 10], ['انشر محتوى اليوم', 10]] },
+  32: { f: 'رفع المستوى الثاني', t: [['صدّر دروس المستوى الثاني', 15], ['ارفعها على الموقع', 25], ['اكتب أسئلة اختبار المستوى الثاني', 15]] },
+  33: { f: 'منشور نص المسابقة', t: [['حدّث أرصدة المسابقة', 10], ['انشر منشور "نص المسابقة — شو صار؟"', 15], ['رد على تعليقات المشتركين', 10]] },
+  34: { f: 'سكربت مقدمة SMC', t: [['اكتب عناوين دروس المستوى الثالث', 10], ['اكتب سكربت مقدمة SMC', 25], ['انشر محتوى اليوم', 10]] },
+  35: { f: 'تسجيل درسين SMC', t: [['سجّل الدرس الأول من المستوى الثالث', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  36: { f: 'إنهاء المستوى الثالث', t: [['سجّل باقي دروس المستوى الثالث', 30], ['صدّرها وارفعها على الموقع', 25], ['انشر محتوى اليوم', 10]] },
+  37: { f: 'تحضير ختام المسابقة', t: [['راجع أرصدة كل المشتركين وحدد الترتيب النهائي', 20], ['حدد الفائزين رسميًا', 10], ['حدد شكل الجائزة أو الشهادة', 10], ['جهّز شهادة أو صورة لكل فائز', 20]] },
+  38: { f: 'إعلان الفائزين', t: [['انشر إعلان الفائزين على كل المنصات', 15], ['ارسل إيميل جماعي "مبروك للفائزين"', 20], ['ارسل للفائزين رسالة خاصة بالجائزة', 15], ['انشر ستوري احتفالي', 10]] },
+  39: { f: 'سكربت SMC متقدم', t: [['اكتب عناوين دروس المستوى الرابع', 10], ['اكتب سكربت SMC المتقدم', 25], ['انشر محتوى اليوم', 10]] },
+  40: { f: 'تسجيل درسين', t: [['سجّل الدرس الأول من المستوى الرابع', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  41: { f: 'إنهاء تسجيل المستوى الرابع', t: [['سجّل باقي دروس المستوى الرابع', 30], ['راجع التسجيلات', 10], ['انشر محتوى اليوم', 10]] },
+  42: { f: 'تحويل الزخم من المسابقة للكورس', t: [['صدّر وارفع المستوى الرابع', 25], ['اكتب إيميل "المسابقة خلصت، والكورس جاهز"', 15], ['ارسل الإيميل', 15]] },
+  43: { f: 'سكربت إدارة المخاطر', t: [['اكتب عناوين دروس المستوى الخامس', 10], ['اكتب سكربت إدارة المخاطر ونفسية المتداول', 25], ['انشر محتوى اليوم', 10]] },
+  44: { f: 'تسجيل درسين', t: [['سجّل الدرس الأول من المستوى الخامس', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  45: { f: 'رفع المستوى الخامس', t: [['سجّل باقي دروس المستوى الخامس', 25], ['صدّرها وارفعها على الموقع', 25]] },
+  46: { f: 'سكربت التخصص والاحتراف', t: [['اكتب عناوين دروس المستوى السادس', 10], ['اكتب سكربت التخصص والاحتراف', 25], ['انشر محتوى اليوم', 10]] },
+  47: { f: 'تسجيل درسين', t: [['سجّل الدرس الأول من المستوى السادس', 25], ['سجّل الدرس الثاني', 25], ['انشر محتوى اليوم', 10]] },
+  48: { f: 'اكتمال الكورس', t: [['سجّل باقي دروس المستوى السادس', 25], ['ارفع المستوى السادس — الكورس اكتمل', 25], ['جرّب الكورس كامل بحساب طالب من أوله لآخره', 15]] },
+  49: { f: 'إعلان اكتمال الكورس', t: [['اكتب إيميل "الكورس اكتمل بالكامل، مجانًا بالكامل"', 15], ['ارسل الإيميل', 15], ['انشر نفس الخبر على كل المنصات', 10]] },
+  50: { f: 'محتوى منتظم', t: [['انشر مقطع تعليمي', 10], ['قصّ مقاطع الأسبوع من فيديو طويل قديم', 20], ['رد على التعليقات', 10]] },
+  51: { f: 'تحليل سوق', t: [['انشر تحليل سوق', 10], ['سجّل أرقام التفاعل عليه بعد ٤ ساعات', 10], ['رد على الأسئلة', 10]] },
+  52: { f: 'استفتاء عن الكورس', t: [['انشر استفتاء: أي مستوى أعجبك أكثر؟', 10], ['اجمع الإجابات', 10], ['اكتب ملاحظة عن المستوى الأكثر طلبًا', 10]] },
+  53: { f: 'أداء صفحة البروكرات', t: [['افتح أرقام صفحة البروكرات', 10], ['سجّل كم حساب انفتح هالشهر', 10], ['حدد أي بروكر جاب أكثر نتيجة', 10]] },
+  54: { f: 'التفكير بمسابقة ثانية', t: [['اكتب فكرة المسابقة الثانية بـ٥ أسطر', 15], ['قرار واضح: تعملها هلق ولا تأجلها', 10]] },
+  55: { f: 'جدولة الأسبوع', t: [['انشر محتوى اليوم', 10], ['جدول منشورات الأسبوع الجاي كامل', 20]] },
+  56: { f: 'تقييم الشهر الثاني', t: [['اجمع أرقام الشهر الثاني', 20], ['قارنها بالشهر الأول', 10], ['اكتب أولويات الشهر الثالث', 15]] },
+  57: { f: 'قراءة استخدام الموقع', t: [['افتح إحصائيات الصفحات', 10], ['رتّب أكثر ٥ صفحات استخدامًا', 10], ['حدد أضعف صفحة تصميميًا وليش', 15]] },
+  58: { f: 'تصميم الشعار', t: [['اجمع ٥ شعارات أعجبتك كمرجع', 10], ['صمّم الشعار النهائي البسيط', 30], ['جرّبه مصغّر على الموبايل', 10]] },
+  59: { f: 'توحيد الهوية', t: [['حدّث الشعار على الموقع', 15], ['وحّد الألوان بكل الصفحات مع Claude', 25], ['حدّث الشعار على كل حسابات السوشال', 10]] },
+  60: { f: 'تحسين الصفحة الرئيسية', t: [['اسأل ٥ مستخدمين عن رأيهم بالصفحة الرئيسية', 20], ['طبّق أهم ملاحظتين', 25], ['راجع الصفحة بعد التعديل', 10]] },
+  61: { f: 'تحسين الكورسات ولوحة التحكم', t: [['حسّن تصميم صفحة الكورسات', 25], ['حسّن لوحة تحكم الطالب', 25]] },
+  62: { f: 'مراجعة الموبايل', t: [['افتح كل صفحة من الموبايل', 15], ['سجّل كل خلل شفته بورقة', 10], ['صلّح أهم ٣ أخطاء', 25]] },
+  63: { f: 'يوم مرونة', t: [['أنهِ أي مهمة تأخرت عنها', 25], ['رتّب ملفات المشروع والمجلدات', 10]] },
+  64: { f: 'قرار الفيديوهات الخاصة', t: [['راجع: هل صار في مشكلة فعلية بروابط اليوتيوب؟', 10], ['قرار واضح: كمّل بالنظام الخاص ولا أجّله', 10]] },
+  65: { f: 'بداية نظام الفيديو', t: [['افتح حساب Cloudflare R2', 15], ['اربطه بالموقع مع Claude', 30]] },
+  66: { f: 'إكمال نظام الفيديو', t: [['أكمل نظام رفع الفيديوهات', 30], ['اضبط صلاحيات المشاهدة', 20]] },
+  67: { f: 'اختبار النظام', t: [['ارفع فيديو تجريبي', 15], ['شغّله من حساب طالب', 10], ['تأكد إنه ما ينحمّل بسهولة', 10]] },
+  68: { f: 'نقل الفيديوهات', t: [['انقل فيديوهات المستوى الأول', 25], ['انقل فيديوهات المستوى الثاني', 25], ['تأكد إن الروابط القديمة بتحوّل صح', 10]] },
+  69: { f: 'بروكر جديد', t: [['تواصل مع بروكر جديد بخصوص الوكالة', 20], ['لو توفر عقد، أضفه لصفحة البروكرات', 20]] },
+  70: { f: 'مراجعة البروكرات الشهرية', t: [['اجمع أرقام صفحة البروكرات', 10], ['قارنها بالشهر اللي قبله', 10], ['حدد تعديل واحد تطبقه', 10]] },
+  71: { f: 'قرار المجاني والمدفوع', t: [['حدد أي مستويات تبقى مجانية', 15], ['حدد أي مستوى يصير مدفوع وسعره', 15], ['اكتب القرار بوضوح بورقة', 10]] },
+  72: { f: 'بداية نظام الاشتراك', t: [['اطلب من Claude نظام التحقق من الاشتراك', 15], ['ركّب الجزء الأول من النظام', 30]] },
+  73: { f: 'إكمال نظام الاشتراك', t: [['أكمل نظام الاشتراك', 30], ['اربطه بوسيلة الدفع', 25]] },
+  74: { f: 'تجربة الدفع', t: [['جرّب الاشتراك بحساب تجريبي من الصفر', 20], ['جرّب حالة الدفع الفاشل', 10], ['صلّح كل شي ظهر بالتجربة', 20]] },
+  75: { f: 'إطلاق النظام', t: [['فعّل النظام رسميًا', 20], ['اكتب إيميل توضيحي شامل', 15], ['ارسل الإيميل', 15]] },
+  76: { f: 'رسالة الترحيب', t: [['اكتب نص رسالة الترحيب للمسجل الجديد', 15], ['فعّلها تلقائيًا', 25]] },
+  77: { f: 'رسالة المتابعة', t: [['اكتب رسالة المتابعة بعد ٣ أيام من التسجيل', 15], ['فعّلها تلقائيًا', 25], ['جرّبها بإيميلك', 10]] },
+  78: { f: 'بداية الحملة', t: [['اختر ٣ صفحات تداول للتعاون', 15], ['تواصل معهم برسالة واضحة', 20], ['جهّز إعلان مدفوع بسيط', 25]] },
+  79: { f: 'متابعة الحملة', t: [['تابع نتائج الحملة', 10], ['رد على المهتمين الجدد', 15], ['عدّل الاستهداف لو النتيجة ضعيفة', 20]] },
+  80: { f: 'ضبط الحملة', t: [['سجّل أرقام الحملة اليوم', 10], ['أوقف أضعف إعلان', 10], ['زوّد ميزانية الأقوى', 10]] },
+  81: { f: 'من وين بيجوا المسجلين', t: [['حلّل مصدر كل مسجل جديد', 20], ['رتّب المصادر من الأقوى للأضعف', 10]] },
+  82: { f: 'تحسين المحتوى الأضعف', t: [['حدد المحتوى الأضعف أداءً', 10], ['أعد نشره بصيغة أفضل', 25]] },
+  83: { f: 'محتوى من أسئلة الناس', t: [['اجمع أكثر ٥ أسئلة متكررة من المتابعين', 15], ['اعمل محتوى يجاوب عليها', 30]] },
+  84: { f: 'يوم مرونة', t: [['أنهِ أي مهمة تأخرت عنها', 25], ['راجع مهام الأسبوع الجاي', 10]] },
+  85: { f: 'تجميع الأرقام', t: [['اجمع عدد المسجلين بالموقع', 10], ['اجمع عدد فاتحي حسابات البروكر', 10], ['اجمع عدد مشتركي المسابقة والمتابعين', 10]] },
+  86: { f: 'مقارنة بالهدف', t: [['قارن كل رقم بالهدف الأصلي', 20], ['حدد وين تجاوزت ووين تأخرت', 15]] },
+  87: { f: 'نقاط القوة والضعف', t: [['اكتب ٣ نقاط قوة', 10], ['اكتب ٣ نقاط ضعف', 10], ['اكتب سبب كل نقطة ضعف', 15]] },
+  88: { f: 'خطة الشهر الرابع', t: [['اكتب أهداف الشهر الرابع', 20], ['فصّل أول أسبوع منها يوم بيوم', 25]] },
+  89: { f: 'قرار مشروع المطاعم', t: [['قيّم وقتك وطاقتك الحالية بصدق', 15], ['قرار واضح: مشروع المطاعم هلق ولا بعدين', 15]] },
+  90: { f: 'استراحة مستحقة', t: [['راجع رحلة الـ٩٠ يوم من أولها', 20], ['اكتب أهم درس تعلمته', 15], ['خذ استراحة — أنجزت ٩٠ يوم شغل مكثف', 10]] },
+};
+
+function planMonthOf(day) { return PLAN_MONTHS.find(m => day >= m.from && day <= m.to) || PLAN_MONTHS[0]; }
+function planWeekOf(day) { return PLAN_WEEKS.find(w => day >= w.from && day <= w.to) || PLAN_WEEKS[0]; }
+function planTasksFor(day) {
+  const d = PLAN_DAYS[day] || { f: '', t: [] };
+  const anchors = PLAN_ANCHORS.map((a, i) => ({ id: 'a' + i, text: a[0], pts: a[1] }));
+  const tasks = d.t.map((t, i) => ({ id: 't' + i, text: t[0], pts: t[1] }));
+  return { focus: d.f, anchors, tasks };
+}
 const KEY = 'habitTrackerV2';
 const SERIES_COLORS = ['#FF4B23', '#C7A467', '#7C8467', '#8A4636', '#A69C8C', '#5B6B73'];
 const TABS = [
   { id: 'habits',  label: 'العادات' },
+  { id: 'plan',    label: 'خطة ٩٠ يوم' },
   { id: 'streaks', label: 'السلسلة' },
   { id: 'calendar',label: 'التقويم' },
   { id: 'goals',   label: 'الأهداف' },
@@ -216,10 +381,17 @@ const TABS = [
 
 function pad(n) { return String(n).padStart(2, '0'); }
 function localDateStr(d = new Date()) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function daysBetween(aStr, bStr) {
+  const a = new Date(aStr + 'T00:00:00'), b = new Date(bStr + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+/* الوقت ممكن يصير بالسالب — وقت العادات السلبية بينخصم من وقت اليوم */
 function formatDuration(totalSeconds) {
-  const s = Math.max(0, Math.floor(totalSeconds));
+  const neg = totalSeconds < 0;
+  const s = Math.abs(Math.trunc(totalSeconds));
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+  const body = h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+  return (neg ? '-' : '') + body;
 }
 function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
@@ -232,7 +404,12 @@ function defaultData() {
     activeTimers: {},
     totalPointsAllTime: 0,
     goals: [],
-    reward: { goalName: 'كيس ملاكمة', targetAmount: 50, pointBalance: 0, dollarBalance: 0, pointsPerDollar: 100, dailyGoalPoints: 50, history: [] },
+    reward: {
+      goalName: 'كيس ملاكمة', targetAmount: 50, pointBalance: 0, dollarBalance: 0,
+      pointsPerDollar: 100, dailyGoalPoints: 50, history: [],
+      secondaryName: 'مكافأة قريبة', secondaryAmount: 10, secondaryHistory: [],
+    },
+    plan: { startDate: null, done: {} },
     lastPenaltyCheckDate: localDateStr(),
     penaltyLog: [],
   };
@@ -244,6 +421,7 @@ let addingHabit = false;
 let addingNegative = false;
 let editingReward = false;
 let editingDailyGoal = false;
+let planViewDay = null;
 
 function load() {
   try {
@@ -259,11 +437,16 @@ function load() {
     p.reward = p.reward || {};
     p.reward.goalName = p.reward.goalName || 'كيس ملاكمة';
     p.reward.targetAmount = p.reward.targetAmount || 50;
-    p.reward.pointBalance = p.reward.pointBalance || 0;
+    p.reward.pointBalance = typeof p.reward.pointBalance === 'number' ? p.reward.pointBalance : 0;
     p.reward.dollarBalance = p.reward.dollarBalance || 0;
     p.reward.pointsPerDollar = p.reward.pointsPerDollar || 100;
     p.reward.dailyGoalPoints = p.reward.dailyGoalPoints || 50;
     p.reward.history = p.reward.history || [];
+    p.reward.secondaryName = p.reward.secondaryName || 'مكافأة قريبة';
+    p.reward.secondaryAmount = typeof p.reward.secondaryAmount === 'number' ? p.reward.secondaryAmount : 10;
+    p.reward.secondaryHistory = p.reward.secondaryHistory || [];
+    p.plan = p.plan || { startDate: null, done: {} };
+    p.plan.done = p.plan.done || {};
     p.lastPenaltyCheckDate = p.lastPenaltyCheckDate || localDateStr();
     p.penaltyLog = p.penaltyLog || [];
     p.habits = (p.habits || []).map(h => ({ type: 'recurring', category: 'secondary', minMinutes: 0, penalty: 0, createdAt: Date.now(), ...h }));
@@ -285,23 +468,19 @@ function pruneTemporary() {
   if (state.habits.length !== bp || state.negativeHabits.length !== bn) save();
 }
 
-/* ---------- Primary tasks: daily minimum-time penalty ---------- */
-/* If a "primary" habit doesn't reach its minMinutes on a given (past) day,
-   its full penalty is subtracted from the balance. Any points already earned
-   from partial time logged that day stay counted, so the net effect is
-   (partial points earned) - (full penalty), exactly as configured. */
+/* ---------- المهام الرئيسية: خصم يومي عند عدم الوصول للحد الأدنى ---------- */
 function applyPrimaryPenaltiesForDay(dStr) {
   state.habits.forEach(h => {
     if (h.category !== 'primary' || !h.minMinutes) return;
     const createdDateStr = localDateStr(new Date(h.createdAt));
-    if (createdDateStr >= dStr) return; // don't penalize the day it was created
+    if (createdDateStr >= dStr) return;
     const secs = (state.logs[dStr] && state.logs[dStr][h.id]) || 0;
     const minutesDone = secs / 60;
     if (minutesDone < h.minMinutes) {
       const penalty = h.penalty || 0;
       if (penalty > 0) {
-        state.reward.pointBalance = Math.max(0, state.reward.pointBalance - penalty);
-        state.totalPointsAllTime = Math.max(0, state.totalPointsAllTime - penalty);
+        state.reward.pointBalance -= penalty;
+        state.totalPointsAllTime -= penalty;
         state.penaltyLog = state.penaltyLog || [];
         state.penaltyLog.unshift({ date: dStr, habit: h.name, minutesDone, minMinutes: h.minMinutes, penalty });
         state.penaltyLog = state.penaltyLog.slice(0, 20);
@@ -313,7 +492,7 @@ function applyPrimaryPenaltiesForDay(dStr) {
 function runDailyPenaltyCheck() {
   const today = localDateStr();
   const last = state.lastPenaltyCheckDate || today;
-  if (last >= today) return; // already checked, nothing new to process
+  if (last >= today) return;
   let cursor = new Date(last + 'T00:00:00');
   cursor.setDate(cursor.getDate() + 1);
   while (localDateStr(cursor) < today) {
@@ -324,7 +503,6 @@ function runDailyPenaltyCheck() {
   save();
 }
 
-/* getHabitSecondsToday: real accumulated total for the day (used for points/stats/streak chart) */
 function getHabitSecondsToday(habitId) {
   const today = localDateStr();
   const logged = (state.logs[today] && state.logs[today][habitId]) || 0;
@@ -333,7 +511,6 @@ function getHabitSecondsToday(habitId) {
   return logged + live;
 }
 
-/* getHabitDisplaySeconds: the counter shown on the habit row — resets to zero every time it's stopped/saved */
 function getHabitDisplaySeconds(habitId) {
   const start = state.activeTimers[habitId];
   return start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
@@ -345,6 +522,13 @@ function getNegativeSecondsToday(habitId) {
   const start = state.activeTimers[habitId];
   const live = start ? Math.max(0, Math.floor((Date.now() - start) / 1000)) : 0;
   return logged + live;
+}
+
+/* صافي وقت اليوم = وقت العادات الإيجابية - وقت العادات السلبية (ممكن يطلع بالسالب) */
+function netSecondsToday() {
+  const pos = state.habits.reduce((s, h) => s + getHabitSecondsToday(h.id), 0);
+  const neg = state.negativeHabits.reduce((s, h) => s + getNegativeSecondsToday(h.id), 0);
+  return pos - neg;
 }
 
 function startTimer(id) { state.activeTimers[id] = Date.now(); save(); render(); }
@@ -366,8 +550,9 @@ function stopTimer(id) {
     state.negativeLogs[day] = state.negativeLogs[day] || {};
     state.negativeLogs[day][id] = (state.negativeLogs[day][id] || 0) + elapsedSec;
     const pointsLost = (elapsedSec / 60) * negHabit.rate;
-    state.reward.pointBalance = Math.max(0, state.reward.pointBalance - pointsLost);
-    state.totalPointsAllTime = Math.max(0, state.totalPointsAllTime - pointsLost);
+    /* النقاط بتنزل تحت الصفر عادي — وأي نقاط بتكسبها بعدين بترفعها من جديد */
+    state.reward.pointBalance -= pointsLost;
+    state.totalPointsAllTime -= pointsLost;
   }
   delete state.activeTimers[id];
   save(); render();
@@ -422,17 +607,43 @@ function convertPoints() {
   save(); render();
 }
 
+function claimSecondary() {
+  const cost = state.reward.secondaryAmount || 0;
+  if (state.reward.dollarBalance < cost || cost <= 0) return;
+  state.reward.dollarBalance -= cost;
+  state.reward.secondaryHistory.unshift({ date: localDateStr(), name: state.reward.secondaryName, amount: cost });
+  state.reward.secondaryHistory = state.reward.secondaryHistory.slice(0, 12);
+  save(); render();
+}
+
 function saveRewardEdit() {
   const goalName = document.getElementById('reward-goal-name').value.trim();
   const targetAmount = parseFloat(document.getElementById('reward-target').value);
   const pointsPerDollar = parseFloat(document.getElementById('reward-rate').value);
   const dailyGoal = parseFloat(document.getElementById('reward-daily-goal').value);
+  const secName = document.getElementById('reward-sec-name').value.trim();
+  const secAmount = parseFloat(document.getElementById('reward-sec-amount').value);
   if (goalName) state.reward.goalName = goalName;
   if (!isNaN(targetAmount)) state.reward.targetAmount = targetAmount;
   if (!isNaN(pointsPerDollar) && pointsPerDollar > 0) state.reward.pointsPerDollar = pointsPerDollar;
   if (!isNaN(dailyGoal) && dailyGoal > 0) state.reward.dailyGoalPoints = dailyGoal;
+  if (secName) state.reward.secondaryName = secName;
+  if (!isNaN(secAmount) && secAmount >= 0) state.reward.secondaryAmount = secAmount;
   editingReward = false;
   save(); render();
+}
+
+/* ---------- نقاط الخطة ---------- */
+function planPointsForDate(dateStr) {
+  let pts = 0;
+  const done = state.plan && state.plan.done ? state.plan.done : {};
+  Object.keys(done).forEach(day => {
+    Object.keys(done[day]).forEach(tid => {
+      const rec = done[day][tid];
+      if (rec && rec.date === dateStr) pts += rec.pts || 0;
+    });
+  });
+  return pts;
 }
 
 function pointsForDay(dateStr) {
@@ -445,6 +656,7 @@ function pointsForDay(dateStr) {
     const secs = (state.negativeLogs[dateStr] && state.negativeLogs[dateStr][h.id]) || 0;
     pts -= (secs / 60) * h.rate;
   });
+  pts += planPointsForDate(dateStr);
   return pts;
 }
 
@@ -494,6 +706,9 @@ function renderMonthCalendar(year, month) {
     const dStr = localDateStr(d);
     if (dStr > todayStr) return `<div class="cal-cell"><span class="cal-day">${d.getDate()}</span></div>`;
     const pts = pointsForDay(dStr);
+    if (pts < 0) {
+      return `<div class="cal-cell minus"><span class="cal-day">${d.getDate()}</span><span class="cal-stars">${Math.round(pts)}</span></div>`;
+    }
     const stars = starsForPoints(pts);
     const alpha = stars / 10;
     return `<div class="cal-cell" style="background:rgba(124,132,103,${(0.06 + alpha * 0.45).toFixed(2)})">
@@ -509,7 +724,6 @@ function renderMonthCalendar(year, month) {
     </div>`;
 }
 
-/* ---------- Streak chart (per-habit line chart: x = day, y = time) ---------- */
 function buildWeekData(habitId) {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -532,11 +746,7 @@ function lineChartSVG(days, color) {
   const maxVal = Math.max(5, ...days.map(d => d.minutes));
   const stepX = (w - padL - padR) / (days.length - 1);
   const scaleY = (h - padT - padB) / maxVal;
-  const points = days.map((d, i) => ({
-    x: padL + i * stepX,
-    y: h - padB - d.minutes * scaleY,
-    ...d,
-  }));
+  const points = days.map((d, i) => ({ x: padL + i * stepX, y: h - padB - d.minutes * scaleY, ...d }));
   const pathD = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
   const gridLines = [0, 0.5, 1].map(f => {
     const y = h - padB - f * maxVal * scaleY;
@@ -558,7 +768,6 @@ function lineChartSVG(days, color) {
   </svg>`;
 }
 
-/* ---------- Goals / journaling with reminders ---------- */
 function addGoal() {
   const habit = document.getElementById('goal-habit').value.trim();
   const place = document.getElementById('goal-place').value.trim();
@@ -597,9 +806,7 @@ function checkGoalNotifications() {
   let changed = false;
   state.goals.forEach(g => {
     if (g.time === hhmm && g.lastNotifiedDate !== today) {
-      try {
-        new Notification('تذكير بعادة 🎯', { body: `حان وقت: ${g.habit} في ${g.place}` });
-      } catch (e) {}
+      try { new Notification('تذكير بعادة 🎯', { body: `حان وقت: ${g.habit} في ${g.place}` }); } catch (e) {}
       g.lastNotifiedDate = today;
       changed = true;
     }
@@ -607,19 +814,21 @@ function checkGoalNotifications() {
   if (changed) save();
 }
 
-/* updateLiveNumbers: updates only the ticking numbers (time/points) in place,
-   without rebuilding any HTML — so nothing visually flashes/jumps every second,
-   and it never disturbs focus/typing anywhere on the page. */
 function updateLiveNumbers() {
   if (activeTab !== 'habits') return;
 
   const todayTotalEl = document.getElementById('today-total-time');
   if (todayTotalEl) {
-    const todayTotal = state.habits.reduce((sum, h) => sum + getHabitSecondsToday(h.id), 0);
-    todayTotalEl.textContent = formatDuration(todayTotal);
+    const net = netSecondsToday();
+    todayTotalEl.textContent = formatDuration(net);
+    todayTotalEl.classList.toggle('neg', net < 0);
   }
   const pointsEl = document.getElementById('today-points-value');
-  if (pointsEl) pointsEl.textContent = Math.round(todayPointsLive());
+  if (pointsEl) {
+    const p = Math.round(todayPointsLive());
+    pointsEl.textContent = p;
+    pointsEl.classList.toggle('neg', p < 0);
+  }
 
   state.habits.forEach(h => {
     const timeEl = document.getElementById(`habit-time-${h.id}`);
@@ -643,13 +852,12 @@ function updateLiveNumbers() {
     const timeEl = document.getElementById(`habit-time-${h.id}`);
     if (timeEl) timeEl.textContent = formatDuration(getHabitDisplaySeconds(h.id));
     const rateEl = document.getElementById(`neg-rate-${h.id}`);
-    if (rateEl) rateEl.textContent = `-${h.rate} نقطة/دقيقة ${h.type === 'temporary' ? 'تنحذف بعد ٢٤س' : ''} · اليوم: ${formatDuration(getNegativeSecondsToday(h.id))}`;
+    if (rateEl) rateEl.textContent = `-${h.rate} نقطة/دقيقة ${h.type === 'temporary' ? 'تنحذف بعد ٢٤س' : ''} · اليوم: -${formatDuration(getNegativeSecondsToday(h.id))}`;
   });
 }
-
-/* ---------- Tab renderers ---------- */
+/* ---------- تبويب العادات ---------- */
 function renderHabitsTab() {
-  const todayTotal = state.habits.reduce((sum, h) => sum + getHabitSecondsToday(h.id), 0);
+  const net = netSecondsToday();
   const dateHeader = new Intl.DateTimeFormat('ar', { weekday: 'long', day: 'numeric', month: 'long', numberingSystem: 'latn' }).format(new Date());
   const typeTag = (t) => t === 'temporary' ? `<span class="tag">تنحذف بعد ٢٤س</span>` : '';
 
@@ -765,7 +973,7 @@ function renderHabitsTab() {
           <span class="dot" style="background:${'#B5563B'}"></span>
           <div class="habit-info">
             <div class="name">${h.name}</div>
-            <div class="rate" id="neg-rate-${h.id}">-${h.rate} نقطة/دقيقة ${typeTag(h.type)} · اليوم: ${formatDuration(todaySecs)}</div>
+            <div class="rate" id="neg-rate-${h.id}">-${h.rate} نقطة/دقيقة ${typeTag(h.type)} · اليوم: -${formatDuration(todaySecs)}</div>
           </div>
           <span class="habit-time" id="habit-time-${h.id}">${formatDuration(seconds)}</span>
           <button class="icon-btn ${running ? 'stop' : 'play'}" data-action="${running ? 'stop' : 'start'}" data-id="${h.id}">${running ? '❚❚' : '▶'}</button>
@@ -793,17 +1001,20 @@ function renderHabitsTab() {
       <button class="btn-solid" data-action="save-add-negative">حفظ</button>
     </div>` : '';
 
+  const todayPts = Math.round(todayPointsLive());
+  const totalPts = Math.round(state.totalPointsAllTime);
+
   return `
     <div class="header">
       <div class="eyebrow">
         <span class="date">${dateHeader}</span>
-        <span class="corner-total">${Math.round(state.totalPointsAllTime)} نقطة إجمالية</span>
+        <span class="corner-total">${totalPts} نقطة إجمالية</span>
       </div>
       <div class="hero">
-        <span class="num" id="today-total-time">${formatDuration(todayTotal)}</span>
-        <span class="label">مجموع وقت التركيز اليوم</span>
+        <span class="num ${net < 0 ? 'neg' : ''}" id="today-total-time">${formatDuration(net)}</span>
+        <span class="label">صافي وقت اليوم — وقت العادات السلبية بينخصم منه</span>
       </div>
-      <div class="today-points">نقاط اليوم <b id="today-points-value">${Math.round(todayPointsLive())}</b></div>
+      <div class="today-points">نقاط اليوم <b id="today-points-value" class="${todayPts < 0 ? 'neg' : ''}">${todayPts}</b> <span style="color:var(--text-dim)">تنزل تحت الصفر وترجع تطلع</span></div>
     </div>
 
     <div class="section">
@@ -830,6 +1041,125 @@ function renderHabitsTab() {
       ${addNegFormHtml}
       <div>${negRowsHtml}</div>
     </div>
+  `;
+}
+
+/* ---------- تبويب خطة الـ٩٠ يوم ---------- */
+function planCurrentDay() {
+  if (!state.plan.startDate) return 1;
+  const n = daysBetween(state.plan.startDate, localDateStr()) + 1;
+  return Math.max(1, Math.min(90, n));
+}
+
+function planTotals() {
+  let total = 0, done = 0;
+  for (let d = 1; d <= 90; d++) {
+    const { anchors, tasks } = planTasksFor(d);
+    total += anchors.length + tasks.length;
+    const rec = state.plan.done[d] || {};
+    done += Object.keys(rec).length;
+  }
+  return { total, done };
+}
+
+function togglePlanTask(day, tid, pts) {
+  state.plan.done[day] = state.plan.done[day] || {};
+  const rec = state.plan.done[day];
+  if (rec[tid]) {
+    state.reward.pointBalance -= rec[tid].pts || 0;
+    state.totalPointsAllTime -= rec[tid].pts || 0;
+    delete rec[tid];
+    if (Object.keys(rec).length === 0) delete state.plan.done[day];
+  } else {
+    rec[tid] = { date: localDateStr(), pts };
+    state.reward.pointBalance += pts;
+    state.totalPointsAllTime += pts;
+  }
+  save(); render();
+}
+
+function startPlan() {
+  state.plan.startDate = localDateStr();
+  planViewDay = null;
+  save(); render();
+}
+
+function renderPlanTab() {
+  if (!state.plan.startDate) {
+    return `
+      <div class="page-title">خطة ٩٠ يوم — أكاديمية التداول</div>
+      <div class="card">
+        <div class="b-title" style="font-family:var(--serif); font-size:17px; margin-bottom:8px;">من موقع جاهز… إلى مصدر دخل فعلي</div>
+        <div style="color:var(--text-muted); font-size:14px; line-height:1.9; margin-bottom:18px;">
+          كل يوم مقسوم لمهام صغيرة تقدر تخلصها وحدة وحدة، وكل مهمة بتضيف نقاط لرصيد المكافأة.
+          لو تأخرت يوم أو يومين، كمّل من وين وقفت — التقدّم محفوظ حسب اليوم مش حسب التاريخ.
+        </div>
+        <button class="btn-solid" data-action="start-plan">ابدأ الخطة من اليوم</button>
+      </div>`;
+  }
+
+  const today = planCurrentDay();
+  const day = planViewDay || today;
+  const month = planMonthOf(day);
+  const week = planWeekOf(day);
+  const { focus, anchors, tasks } = planTasksFor(day);
+  const doneRec = state.plan.done[day] || {};
+  const all = [...anchors.map(a => ({ ...a, group: 'anchor' })), ...tasks.map(t => ({ ...t, group: 'task' }))];
+  const dayDone = all.filter(x => doneRec[x.id]).length;
+  const dayPts = all.reduce((s, x) => s + (doneRec[x.id] ? x.pts : 0), 0);
+  const dayMaxPts = all.reduce((s, x) => s + x.pts, 0);
+  const totals = planTotals();
+  const overallPct = Math.round((totals.done / totals.total) * 100);
+
+  const strip = Array.from({ length: 90 }, (_, i) => {
+    const d = i + 1;
+    const rec = state.plan.done[d] || {};
+    const { anchors: a, tasks: t } = planTasksFor(d);
+    const full = Object.keys(rec).length >= (a.length + t.length);
+    const cls = d === day ? 'now' : (full ? 'on' : '');
+    return `<span class="${cls}"></span>`;
+  }).join('');
+
+  const rowHtml = (x) => `
+    <div class="task-row ${doneRec[x.id] ? 'done' : ''}" data-action="toggle-task" data-day="${day}" data-tid="${x.id}" data-pts="${x.pts}">
+      <span class="task-box">${doneRec[x.id] ? '✓' : ''}</span>
+      <span class="task-text">${x.text}</span>
+      <span class="task-pts">+${x.pts}</span>
+    </div>`;
+
+  return `
+    <div class="plan-head">
+      <div>
+        <div class="plan-daynum">اليوم ${day}<small>من ٩٠</small></div>
+        <div class="plan-meta" style="margin-top:10px;">
+          <span>الشهر ${month.n}</span>
+          <span>الأسبوع ${week.n} — ${week.title}</span>
+        </div>
+      </div>
+      <div class="plan-phase">
+        <b>${month.title.split('—')[1] ? month.title.split('—')[1].trim() : month.title}</b>
+        ${month.goal}
+      </div>
+    </div>
+
+    <div class="plan-nav" style="margin-bottom:16px;">
+      <button data-action="plan-prev" ${day <= 1 ? 'disabled' : ''}>اليوم السابق</button>
+      <button data-action="plan-today">ارجع لليوم ${today}</button>
+      <button data-action="plan-next" ${day >= 90 ? 'disabled' : ''}>اليوم التالي</button>
+    </div>
+
+    <div class="phase-strip">${strip}</div>
+
+    <div class="day-flag">
+      <b>تركيز اليوم: ${focus}</b>
+      أنجزت ${dayDone} من ${all.length} مهمة اليوم · ${Math.round(dayPts)} نقطة من ${dayMaxPts} · تقدّم الخطة كامل ${overallPct}%
+    </div>
+
+    <div class="sub-heading">ثوابت يومية</div>
+    <div>${anchors.map(a => rowHtml({ ...a })).join('')}</div>
+
+    <div class="sub-heading">مهام اليوم ${day}</div>
+    <div>${tasks.length ? tasks.map(t => rowHtml({ ...t })).join('') : '<div class="empty">ما في مهام محددة لهذا اليوم.</div>'}</div>
   `;
 }
 
@@ -880,7 +1210,8 @@ function renderCalendarTab() {
         <button class="muted-btn" data-action="edit-daily-goal">✎ تعديل</button>
       </div>
       <div class="s-sub" style="margin-top:8px; margin-bottom:0;">
-        إذا حققت التارغت بالكامل أو أكثر بأي يوم بتاخد ⭐️ ١٠/١٠. وإذا حققت جزء منه، التقييم بيكون نسبي حسب عدد النقاط اللي عملتها — مثلاً نص التارغت = ٥ نجوم تقريبًا.
+        إذا حققت التارغت بالكامل أو أكثر بأي يوم بتاخد ⭐️ ١٠/١٠، وإذا حققت جزء منه التقييم بيكون نسبي.
+        اليوم اللي نقاطه بالسالب بيظهر بإطار أحمر مع الرقم السالب بدل النجوم.
       </div>
     </div>
   `;
@@ -931,32 +1262,54 @@ function renderGoalsTab() {
 }
 
 function renderRewardTab() {
-  const progressPct = Math.min(100, (state.reward.dollarBalance / (state.reward.targetAmount || 1)) * 100);
-  const historyHtml = state.reward.history.length > 0 ? `
+  const r = state.reward;
+  const progressPct = Math.max(0, Math.min(100, (r.dollarBalance / (r.targetAmount || 1)) * 100));
+  const secPct = Math.max(0, Math.min(100, (r.dollarBalance / (r.secondaryAmount || 1)) * 100));
+  const secReady = r.secondaryAmount > 0 && r.dollarBalance >= r.secondaryAmount;
+
+  const historyHtml = r.history.length > 0 ? `
     <div class="history">
       <div class="h-title">سجل التحويلات</div>
-      ${state.reward.history.map(e => `
+      ${r.history.map(e => `
         <div class="h-item"><span class="d">${e.date}</span><span>${Math.round(e.points)} نقطة → $${e.dollars.toFixed(2)}</span></div>
+      `).join('')}
+    </div>` : '';
+
+  const secHistoryHtml = r.secondaryHistory.length > 0 ? `
+    <div class="history">
+      <div class="h-title">مكافآت صغيرة استلمتها</div>
+      ${r.secondaryHistory.map(e => `
+        <div class="h-item"><span class="d">${e.date}</span><span>${e.name} — $${e.amount}</span></div>
       `).join('')}
     </div>` : '';
 
   const rewardBodyHtml = editingReward ? `
     <div class="field" style="margin-bottom:12px;">
-      <label>اسم الهدف</label>
-      <input id="reward-goal-name" value="${state.reward.goalName}" />
+      <label>اسم المكافأة الرئيسية</label>
+      <input id="reward-goal-name" value="${r.goalName}" />
     </div>
     <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
       <div class="field">
         <label>المبلغ المستهدف ($)</label>
-        <input id="reward-target" type="number" value="${state.reward.targetAmount}" />
+        <input id="reward-target" type="number" value="${r.targetAmount}" />
       </div>
       <div class="field">
         <label>نقطة مقابل الدولار</label>
-        <input id="reward-rate" type="number" value="${state.reward.pointsPerDollar}" />
+        <input id="reward-rate" type="number" value="${r.pointsPerDollar}" />
       </div>
       <div class="field">
         <label>هدف نقاط اليوم (لـ ١٠ نجوم)</label>
-        <input id="reward-daily-goal" type="number" value="${state.reward.dailyGoalPoints}" />
+        <input id="reward-daily-goal" type="number" value="${r.dailyGoalPoints}" />
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+      <div class="field">
+        <label>اسم المكافأة الثانوية (القريبة)</label>
+        <input id="reward-sec-name" value="${r.secondaryName}" />
+      </div>
+      <div class="field">
+        <label>سعرها ($)</label>
+        <input id="reward-sec-amount" type="number" value="${r.secondaryAmount}" />
       </div>
     </div>
     <div style="display:flex; gap:8px;">
@@ -966,21 +1319,43 @@ function renderRewardTab() {
   ` : `
     <div class="reward-top">
       <div>
-        <div class="points-label" style="margin-bottom:4px;">الهدف</div>
-        <div class="reward-goal">${state.reward.goalName}</div>
+        <div class="points-label" style="margin-bottom:4px;">المكافأة الرئيسية</div>
+        <div class="reward-goal">${r.goalName}</div>
       </div>
-      <span class="points-label">$${state.reward.dollarBalance.toFixed(2)} / $${state.reward.targetAmount}</span>
+      <span class="points-label">$${r.dollarBalance.toFixed(2)} / $${r.targetAmount}</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%"></div></div>
     <div class="points-row">
       <div>
         <div class="points-label">رصيد النقاط الحالي</div>
-        <div class="points-value">${Math.round(state.reward.pointBalance)}</div>
-        <div class="points-est">≈ $${(state.reward.pointBalance / state.reward.pointsPerDollar).toFixed(2)} عند التحويل</div>
+        <div class="points-value ${r.pointBalance < 0 ? 'neg' : ''}">${Math.round(r.pointBalance)}</div>
+        <div class="points-est">${r.pointBalance >= 0
+          ? `≈ $${(r.pointBalance / r.pointsPerDollar).toFixed(2)} عند التحويل`
+          : `رصيدك بالسالب — كل نقطة بتكسبها بترفعه لفوق قبل ما يصير دولارات`}</div>
       </div>
-      <button class="btn-teal" data-action="convert" ${state.reward.pointBalance <= 0 ? 'disabled' : ''}>تحويل إلى دولارات</button>
+      <button class="btn-teal" data-action="convert" ${r.pointBalance <= 0 ? 'disabled' : ''}>تحويل إلى دولارات</button>
     </div>
     ${historyHtml}
+  `;
+
+  const secondaryHtml = `
+    <div class="reward-top">
+      <div>
+        <div class="points-label" style="margin-bottom:4px;">المكافأة الثانوية — القريبة</div>
+        <div class="reward-goal">${r.secondaryName}</div>
+      </div>
+      <span class="points-label">$${r.dollarBalance.toFixed(2)} / $${r.secondaryAmount}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${secPct}%; background:var(--teal)"></div></div>
+    <div class="points-row">
+      <div class="penalty-note" style="max-width:420px; line-height:1.7;">
+        ${secReady
+          ? 'جاهزة — استلمها ورصيدك بينخصم منه سعرها، وبعدها حدد مكافأة قريبة جديدة.'
+          : `باقي $${Math.max(0, r.secondaryAmount - r.dollarBalance).toFixed(2)} لتوصلها. هدف قريب بيخليك تشوف نتيجة قبل المكافأة الكبيرة.`}
+      </div>
+      <button class="btn-teal" data-action="claim-secondary" ${secReady ? '' : 'disabled'}>استلمت المكافأة</button>
+    </div>
+    ${secHistoryHtml}
   `;
 
   return `
@@ -990,6 +1365,7 @@ function renderRewardTab() {
         ${!editingReward ? `<button class="muted-btn" data-action="edit-reward">✎ تعديل</button>` : ''}
       </div>
       <div class="card">${rewardBodyHtml}</div>
+      ${!editingReward ? `<div class="card" style="margin-top:18px;">${secondaryHtml}</div>` : ''}
     </div>
   `;
 }
@@ -1009,6 +1385,7 @@ function render() {
 
   let contentHtml = '';
   if (activeTab === 'habits') contentHtml = renderHabitsTab();
+  else if (activeTab === 'plan') contentHtml = renderPlanTab();
   else if (activeTab === 'streaks') contentHtml = renderStreaksTab();
   else if (activeTab === 'calendar') contentHtml = renderCalendarTab();
   else if (activeTab === 'goals') contentHtml = renderGoalsTab();
@@ -1037,6 +1414,7 @@ document.addEventListener('click', (e) => {
   else if (action === 'save-add-negative') addNegativeHabit();
   else if (action === 'delete-negative') deleteNegativeHabit(id);
   else if (action === 'convert') convertPoints();
+  else if (action === 'claim-secondary') claimSecondary();
   else if (action === 'edit-reward') { editingReward = true; render(); }
   else if (action === 'save-reward') saveRewardEdit();
   else if (action === 'cancel-reward') { editingReward = false; render(); }
@@ -1046,22 +1424,20 @@ document.addEventListener('click', (e) => {
   else if (action === 'edit-daily-goal') { editingDailyGoal = true; render(); }
   else if (action === 'save-daily-goal') saveDailyGoal();
   else if (action === 'cancel-daily-goal') { editingDailyGoal = false; render(); }
+  else if (action === 'start-plan') startPlan();
+  else if (action === 'plan-prev') { planViewDay = Math.max(1, (planViewDay || planCurrentDay()) - 1); render(); }
+  else if (action === 'plan-next') { planViewDay = Math.min(90, (planViewDay || planCurrentDay()) + 1); render(); }
+  else if (action === 'plan-today') { planViewDay = null; render(); }
+  else if (action === 'toggle-task') togglePlanTask(parseInt(btn.dataset.day, 10), btn.dataset.tid, parseFloat(btn.dataset.pts));
 });
 
 setInterval(() => {
   checkGoalNotifications();
-  // Only update the ticking numbers in place — never rebuild the page's HTML
-  // on a timer. A full render() here would visually flash/jump every second
-  // and could disturb focus while typing; updateLiveNumbers() only touches
-  // the specific time/points text nodes, so the page stays visually still.
   updateLiveNumbers();
 }, 1000);
 
-if ('Notification' in window && Notification.permission === 'default' && state.goals.length > 0) {
-  // don't auto-prompt without user gesture on some browsers; status shown in Goals tab instead
-}
-
 render();
+
 </script>
 </body>
 </html>
